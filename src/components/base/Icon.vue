@@ -1,5 +1,5 @@
 <template>
-	<svg>
+	<svg :class="size">
 		<use :href="require('@/assets/Icons/icons.svg') + '#' + icon"></use>
 	</svg>
 </template>
@@ -8,15 +8,25 @@
 	export default {
 		name: "Icon",
 		props: {
-			icon: String,
+			icon: {
+				type: String,
+			},
+			size: {
+				type: String,
+			},
 		},
 	};
 </script>
 
 <style scoped>
 	svg {
-		width: 26px;
-    height: 26px;
+		--size: 26px;
+		width: var(--size);
+		height: var(--size);
 		fill: currentColor;
+
+		&.sm {
+			--size: 16px;
+		}
 	}
 </style>

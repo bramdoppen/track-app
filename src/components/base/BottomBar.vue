@@ -1,16 +1,16 @@
 <template>
 	<div class="bar-container">
 		<router-link to="/kratten" class="bar-item">
-			<Icon icon="settings" />
-			<span>Kratten</span>
+			<Icon icon="boxes" />
+			<span class="bar-text">Kratten</span>
 		</router-link>
 		<router-link to="/inzicht" class="bar-item">
 			<Icon icon="insight" />
-			<span>Inzicht</span>
+			<span class="bar-text">Inzicht</span>
 		</router-link>
 		<router-link to="/instellingen" class="bar-item">
 			<Icon icon="settings" />
-			<span>Beheer</span>
+			<span class="bar-text">Beheer</span>
 		</router-link>
 	</div>
 </template>
@@ -33,23 +33,31 @@
 		background: white;
 		display: flex;
 		justify-content: space-around;
-		height: 80px;
+		height: 70px;
 		border-top: 1px solid #e4e4e4;
 		flex: 0 0 auto;
+		padding-bottom: env(safe-area-inset-bottom);
 	}
+
 	.bar-item {
 		flex: 1;
 		display: flex;
-        flex-direction: column;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		font-size: 14px;
 		color: var(--color-border);
 		font-family: var(--font-title);
 		font-weight: 600;
-        text-decoration: none;
+		text-decoration: none;
+
 		&.router-link-exact-active {
 			color: var(--color-primary);
 		}
+	}
+
+	.bar-text {
+		display: inline-block;
+		margin-top: 3px;
 	}
 </style>

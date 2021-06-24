@@ -34,5 +34,7 @@
 	}
   .main {
     flex: 1 0 auto;
+    padding: 20px;
+    background: #f5f5f5;
   }
 </style>
