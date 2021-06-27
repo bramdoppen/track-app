@@ -50,8 +50,9 @@
 	.header {
 		padding: 10px var(--p-side);
 		height: 65px;
-		color: #fff;
-		background: var(--color-primary);
+		
+		background: #fff;
+    border-bottom: 1px solid #e4e4e4;
 		font-size: 20px;
 		display: grid;
 		grid-template-columns: 30px 1fr 30px;

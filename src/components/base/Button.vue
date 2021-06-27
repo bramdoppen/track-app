@@ -15,7 +15,7 @@
 	export default {
 		name: "Button",
 
-    components: {
+		components: {
 			Icon,
 		},
 
@@ -32,17 +32,17 @@
 			iconSize: {
 				type: String,
 			},
-      to: {
-        type: String,
-        required: false,
-      },
+			to: {
+				type: String,
+				required: false,
+			},
 		},
-    emits: ['onClick'],
-    methods: {
-      handleClick() {
-        this.$emit('onClick')
-      }
-    }
+		emits: ["onClick"],
+		methods: {
+			handleClick() {
+				this.$emit("onClick");
+			},
+		},
 	};
 </script>
 
@@ -91,11 +91,11 @@
 				filter: brightness(1.8);
 			}
 		}
-    
-    &.gray {
-      color: var(--color-dark);
+
+		&.gray {
+			color: var(--color-dark);
 			background: #fff;
-    }
+		}
 
 		&.square {
 			border-radius: 50%;
@@ -106,6 +106,14 @@
 			display: flex;
 			align-items: center;
 			justify-content: center;
+		}
+
+		&.green {
+			font-size: 18px;
+			background: var(--color-secondary);
+			padding: 5px 10px;
+			min-height: 50px;
+			border-radius: 15px;
 		}
 	}
 </style>
