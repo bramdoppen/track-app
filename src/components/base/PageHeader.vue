@@ -1,7 +1,7 @@
 <template>
 	<header class="header">
 		<div class="button-container">
-			<Button type="square gray" icon="arrow" iconSize="sm" v-if="showBackButton" @onClick="prevPage" />
+			<Button look="square gray" icon="arrow" iconSize="sm" v-if="showBackButton" @click="prevPage" />
 		</div>
 		<div class="text-holder">
 			<h1>{{ title }}</h1>

@@ -1,65 +1,53 @@
 <template>
 	<div class="form-row">
 		<div class="form-item">
-			<label>Bloemsoort zoeken:</label>
-			<input ref="mainsearch" placeholder="Zoek naar een bloemsoort" v-on:keyup="handleInputChange" />
+			<FormInput label="Bloemsoort zoeken" placeholder="Zoek naar een bloemsoort" v-model:value="searchKey" />
 		</div>
 	</div>
 </template>
 
 <script>
-	import { getAllFromDoc } from "@/functions/firebaseFunctions.js";
+	import { ref, onMounted, computed, watch } from "vue";
+	import { fetchFlowerTypes } from "@/api/flowerTypes.js";
+	import FormInput from "@/components/base/form/FormInput.vue";
 
 	export default {
 		name: "SearchFlower",
 		props: {
-			loading: Boolean,
-			result: Array,
+			result: {
+				type: Array,
+			},
 		},
-		data: function() {
-			return {
-				timeout: null,
-				localDahliaDb: [],
+		components: {
+			FormInput,
+		},
+		emits: ["update:result"],
+		setup(props, { emit }) {
+			// Get flower types
+			const flowerTypes = ref([]);
+			const getFlowerTypes = async () => {
+				flowerTypes.value = await fetchFlowerTypes();
 			};
-		},
-		created() {
-			this.updateDahliaDb();
-		},
-		methods: {
-			updateDahliaDb() {
-				getAllFromDoc("flowers").then((querySnapshot) => {
-					querySnapshot.forEach((doc) => {
-						this.localDahliaDb[doc.id] = {
-							id: doc.id,
-							name: doc.data().name,
-							colorHex: doc.data().colorHex,
-							amountPerBox: doc.data().amountPerBox,
-						};
-					});
-				});
-			},
-			handleInputChange(e) {
-				this.$emit("update:loading", true);
-				// debounce alles wat hierin gebeurt.
-				clearTimeout(this.timeout);
-				this.timeout = setTimeout(() => {this.searchBloemsoort(e)}, 250);
-			},
-			searchBloemsoort(input) {
-				// data lokaal halen op iedere pagina refresh. Deze gaan haast nooit veranderen.
-				const inputValue = input.target.value.toLowerCase();
+			onMounted(getFlowerTypes);
 
-				// do the search
-				this.$emit("update:result", filterIt(this.localDahliaDb, inputValue));
-				this.$emit("update:loading", false);
-
-				function filterIt(arr, searchKey) {
-					if (searchKey.length === 0) {
-						return null;
-					} else {
-						return arr.filter((obj) => Object.keys(obj).some((key) => obj[key].toLowerCase().includes(searchKey)));
-					}
+			const searchKey = ref();
+			// Filter results
+			const filteredResults = computed(() => {
+				if (searchKey.value && searchKey.value.length > 0) {
+					return flowerTypes.value.filter((obj) => Object.keys(obj).some((key) => obj[key].toLowerCase().includes(searchKey.value)));
 				}
-			},
+				return [];
+			});
+
+      // Watching the filteredresults and emitting them
+			watch(filteredResults, (newValue) => {
+				emit("update:result", newValue);
+			});
+
+			return {
+				searchKey,
+				flowerTypes,
+			};
 		},
 	};
 </script>

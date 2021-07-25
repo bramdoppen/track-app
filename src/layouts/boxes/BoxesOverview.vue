@@ -1,15 +1,25 @@
 <template>
 	<BasePage title="Kratten">
 		<BoxesList>
-      <Box>
+      <Box :hidden="!isDesktop">
         <h3>Nieuwe kratten</h3>
         <p>Nieuwe kratten aanmaken</p>
-        <Button to="/kratten/nieuw" type="green" title="Nieuwe kratten"></Button>
+        <Button to="/kratten/nieuw" look="green" title="Nieuwe kratten"></Button>
+      </Box>
+      <Box>
+        <h3>Runnermodus</h3>
+        <p>Bloemkratten op nieuwe locatie inchecken</p>
+        <Button to="/kratten/list" look="green" title="Start Runnermodus"></Button>
+      </Box>
+      <Box>
+        <h3>Bekijk krat</h3>
+        <p>Bekijk gegevens van een krat</p>
+        <Button to="/kratten/list" look="green" title="Scan krat"></Button>
       </Box>
       <Box>
         <h3>Alle kratten</h3>
         <p>Overzicht van alle kratten</p>
-        <Button to="/kratten/list" type="green" title="Alle kratten"></Button>
+        <Button to="/kratten/list" look="green" title="Alle kratten"></Button>
       </Box>
     </BoxesList>
 	</BasePage>
@@ -28,5 +38,19 @@
       BoxesList,
       Button,
 		},
+    setup() {
+
+      return {
+        isDesktop: window.innerWidth > 768
+      }
+    }
 	};
 </script>
+
+<style scoped>
+.desktop-only {
+  @media (max-width: 48em) {
+    display: none;
+  }
+}
+</style>

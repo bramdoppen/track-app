@@ -1,20 +1,15 @@
 <template>
-	<button class="button" :class="[type]" v-if="!to" @click="handleClick">
+	<component :is="tag" class="button" :type="compType" :class="[type, look]" :to="to">
 		<span>{{ title }}</span>
 		<Icon :icon="icon" :size="iconSize" v-if="icon" />
-	</button>
-	<router-link class="button" :class="[type]" :to="to" v-if="to">
-		<span>{{ title }}</span>
-		<Icon :icon="icon" :size="iconSize" v-if="icon" />
-	</router-link>
+	</component>
 </template>
 
 <script>
+	import { toRefs, computed } from "vue";
 	import Icon from "@/components/base/Icon";
 
 	export default {
-		name: "Button",
-
 		components: {
 			Icon,
 		},
@@ -25,6 +20,7 @@
 			},
 			type: {
 				type: String,
+				default: "button",
 			},
 			icon: {
 				type: String,
@@ -32,16 +28,25 @@
 			iconSize: {
 				type: String,
 			},
+			look: {
+				type: String,
+			},
 			to: {
 				type: String,
 				required: false,
 			},
 		},
-		emits: ["onClick"],
-		methods: {
-			handleClick() {
-				this.$emit("onClick");
-			},
+		setup(props) {
+			const { to, type } = toRefs(props);
+			return {
+				tag: computed(() => (to.value ? "router-link" : "button")),
+				compType: computed(() => {
+					if (type.value && !to.value) {
+						return type.value;
+					}
+					return null;
+				}),
+			};
 		},
 	};
 </script>
@@ -76,6 +81,13 @@
 
 		&.small {
 			padding: 18px 24px;
+		}
+
+		&.xsmall {
+			padding: 0px 10px;
+			font-size: 14px;
+			line-height: 1;
+			min-height: 30px;
 		}
 
 		&.tiny {
@@ -114,6 +126,14 @@
 			padding: 5px 10px;
 			min-height: 50px;
 			border-radius: 15px;
+		}
+
+		&.nobutton {
+			background: transparent;
+			border: 0;
+			text-decoration: underline;
+			padding: 0;
+			color: #000;
 		}
 	}
 </style>

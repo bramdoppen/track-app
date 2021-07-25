@@ -1,28 +1,27 @@
-import { createStore } from 'vuex'
+import { createStore } from 'vuex';
+import createPersistedState from "vuex-persistedstate";
 
 export default createStore({
   state: {
     user: null,
     corsoGroup: null,
+    printerStartCol: 1,
   },
   mutations: {
     userLogin(state, user) {
-			state.user = {
-				id: user.id,
-				name: user.name,
-				email: user.email,
-				permissions: user.permissions,
-			};
+			state.user = user;
+			state.corsoGroup = user.corsoGroup;
 		},
-		setCorsoGroup(state, corsoGroup) {
-			state.corsoGroup = {
-				id: corsoGroup.id,
-				name: corsoGroup.name,
-			};
+    changeStartCol(state, payload) {
+			state.printerStartCol = payload;
 		},
   },
   actions: {
+		userLogin({commit}, user) {
+			commit('userLogin', user)
+		},
   },
   modules: {
-  }
+  },
+	plugins: [createPersistedState()],
 })

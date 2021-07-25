@@ -35,6 +35,26 @@ const routes = [
     ]
   },
   {
+    path: '/flowers',
+    name: 'Flowers',
+    component: RouteRenderer,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: 'create',
+        name: 'flowers-create',
+        meta: { requiresAuth: true },
+        component: () => import('../layouts/flowers/create/CreateFlowers.vue'),
+      },
+      {
+        path: 'list',
+        name: 'flowers-list',
+        meta: { requiresAuth: true },
+        component: () => import('../layouts/flowers/list/FlowersList.vue'),
+      },
+    ]
+  },
+  {
     path: '/inzicht',
     name: 'Inzicht',
     meta: { requiresAuth: true },
@@ -42,7 +62,7 @@ const routes = [
   },
   {
     path: '/instellingen',
-    name: 'Instellingen',
+    name: 'instellingen',
     meta: { requiresAuth: true },
     component: () => import('../layouts/settings/SettingsOverview.vue')
   },

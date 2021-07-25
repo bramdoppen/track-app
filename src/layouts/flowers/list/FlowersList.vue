@@ -1,13 +1,17 @@
 <template>
-	<BasePage title="Alle Kratten">
+	<BasePage title="Alle Dahlia's">
 		<div>
+      {{data}}
 			<BoxesList>
         <BoxListViewItem v-for="item in data" 
           :key="item.id" 
-          :title="`${item.data.flowerType.id} - ${item.data.flowerType.name}`" 
-          :sub="`ID: ${item.id}. State: ${item.data.state}. Created: ${new Date(item.data.createdOn.seconds * 1000)}`" />
+          :title="item.name" 
+          :sub="item.id"
+          :onEdit="() => {onEdit(item)}"/>
       </BoxesList>
 		</div>
+    <Button to="/flowers/create" look="green" title="Nieuwe dahlia toevoegen"></Button>
+
 	</BasePage>
 </template>
 
@@ -15,26 +19,31 @@
 	import BasePage from "@/layouts/BasePage.vue";
   import BoxListViewItem from "@/components/base/BoxListViewItem.vue";
 	import BoxesList from "@/components/base/BoxesList.vue";
+	import Button from "@/components/base/Button.vue";
 	import { ref, onMounted } from "vue";
-	import { fetchAllBoxes } from "@/api/boxes.js";
+	import { fetchFlowerTypes } from "@/api/flowerTypes.js";
 
 	export default {
 		components: {
 			BasePage,
       BoxListViewItem,
       BoxesList,
+      Button,
 		},
 		setup() {
 			// Get flowerTypes
 			const data = ref([]);
 			const getAll = async () => {
-				data.value = await fetchAllBoxes();
+				data.value = await fetchFlowerTypes();
 			};
 
 			onMounted(getAll);
-
+      function onEdit(flower) {
+        console.log(flower)
+      }
 			return {
 				data,
+        onEdit
 			};
 		},
 	};

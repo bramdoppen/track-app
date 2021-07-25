@@ -1,5 +1,5 @@
 <template>
-	<div class="box">
+	<div class="box" v-if="!hidden">
 		<slot></slot>
 	</div>
 </template>
@@ -7,6 +7,12 @@
 <script>
 	export default {
 		name: "Box",
+		props: {
+			hidden: {
+				type: Boolean,
+				default: false,
+			}
+		}
 	};
 </script>
 
