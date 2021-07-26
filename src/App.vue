@@ -1,7 +1,11 @@
 <template>
 	<router-view />
 </template>
-
+<script>
+	let vh = window.innerHeight * 0.01;
+	// Then we set the value in the --vh custom property to the root of the document
+	document.documentElement.style.setProperty("--vh", `${vh}px`);
+</script>
 <style>
 	:root {
 		--m-small: 10px;
@@ -32,6 +36,7 @@
 	html,
 	body {
 		margin: 0;
+		overflow: hidden;
 	}
 	body {
 		font-family: var(--font-base);
@@ -57,6 +62,27 @@
 	}
 
 	#app {
-		height: 100vh;
+		height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+		height: calc(var(--vh, 1vh) * 100);
+		overflow: hidden;
+	}
+
+	.fade-enter-active,
+	.fade-leave-active {
+		transition: opacity 0.15s ease;
+	}
+
+	.fade-enter-from,
+	.fade-leave-to {
+		opacity: 0;
+	}
+
+	.trans-list-enter-active,
+	.trans-list-leave-active {
+		transition: opacity 0.2s ease;
+	}
+	.trans-list-enter-from,
+	.trans-list-leave-to {
+		opacity: 0;
 	}
 </style>

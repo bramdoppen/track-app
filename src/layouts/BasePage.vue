@@ -22,7 +22,7 @@
 			title: {
 				type: String,
 			},
-		}
+		},
 	};
 </script>
 
@@ -30,14 +30,20 @@
 	.page {
 		display: flex;
 		flex-direction: column;
-		height: 100%;
+		display: grid;
+		grid-template-rows: auto 1fr auto;
+		height: 100vh;
+		height: calc(var(--vh, 1vh) * 100);
+		overflow: hidden;
 	}
-  .main {
-    flex: 1 0 auto;
-    padding: 20px;
-    background: #f5f5f5;
-  }
-  .message {
-    background: red;
-  }
+	.main {
+		flex: 1 0 auto;
+		padding: 20px;
+		overflow: auto;
+		/* padding-top: 85px; */
+		background: #f5f5f5;
+	}
+	.message {
+		background: red;
+	}
 </style>

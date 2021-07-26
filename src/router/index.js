@@ -5,12 +5,12 @@ import store from "@/store/index.js"
 const routes = [
   {
     path: '/',
-    redirect: '/kratten',
+    redirect: '/boxes',
     meta: { requiresAuth: true },
   },
   {
-    path: '/kratten',
-    name: 'Kratten',
+    path: '/boxes',
+    name: 'boxes',
     component: RouteRenderer,
     meta: { requiresAuth: true },
     children: [
@@ -21,7 +21,7 @@ const routes = [
         component: () => import('../layouts/boxes/BoxesOverview.vue'),
       },
       {
-        path: 'nieuw',
+        path: 'create',
         name: 'boxes-create',
         meta: { requiresAuth: true },
         component: () => import('../layouts/boxes/create/CreateBoxes.vue'),
@@ -32,11 +32,23 @@ const routes = [
         meta: { requiresAuth: true },
         component: () => import('../layouts/boxes/list/BoxesList.vue'),
       },
+      {
+        path: 'batch-scan',
+        name: 'boxes-batch-scan',
+        meta: { requiresAuth: true },
+        component: () => import('../layouts/boxes/runner/RunnerSelectState.vue'),
+      },
+      {
+        path: 'scan',
+        name: 'boxes-scanner',
+        meta: { requiresAuth: true },
+        component: () => import('../layouts/scanner/Scanner.vue'),
+      },
     ]
   },
   {
     path: '/flowers',
-    name: 'Flowers',
+    name: 'flowers',
     component: RouteRenderer,
     meta: { requiresAuth: true },
     children: [
@@ -55,14 +67,14 @@ const routes = [
     ]
   },
   {
-    path: '/inzicht',
-    name: 'Inzicht',
+    path: '/insight',
+    name: 'insight',
     meta: { requiresAuth: true },
     component: () => import('../layouts/insights/InsightsOverview.vue')
   },
   {
-    path: '/instellingen',
-    name: 'instellingen',
+    path: '/settings',
+    name: 'settings',
     meta: { requiresAuth: true },
     component: () => import('../layouts/settings/SettingsOverview.vue')
   },

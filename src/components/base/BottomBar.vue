@@ -1,14 +1,14 @@
 <template>
 	<div class="bar-container">
-		<router-link to="/kratten" class="bar-item">
+		<router-link to="/boxes" class="bar-item">
 			<Icon icon="boxes" />
 			<span class="bar-text">Kratten</span>
 		</router-link>
-		<router-link to="/inzicht" class="bar-item">
+		<router-link to="/insight" class="bar-item">
 			<Icon icon="insight" />
 			<span class="bar-text">Inzicht</span>
 		</router-link>
-		<router-link to="/instellingen" class="bar-item">
+		<router-link to="/settings" class="bar-item">
 			<Icon icon="settings" />
 			<span class="bar-text">Beheer</span>
 		</router-link>
@@ -33,10 +33,11 @@
 		background: white;
 		display: flex;
 		justify-content: space-around;
-		height: 70px;
+		height: calc(70px + env(safe-area-inset-bottom));
 		border-top: 1px solid #e4e4e4;
 		flex: 0 0 auto;
 		padding-bottom: env(safe-area-inset-bottom);
+		box-sizing: border-box;
 	}
 
 	.bar-item {

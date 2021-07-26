@@ -1,0 +1,76 @@
+<template>
+	<BasePage title="Runnermodus">
+		<BoxesList>
+			<Box v-if="place != 3">
+				<h3>Batch scan</h3>
+				<p>Kies een locatie om één of meerdere kratten in te checken.</p>
+				<BoxesList gap="8px">
+					<Button v-for="(place, idx) in places" :key="idx" look="green" :title="place" @click="setPlace(idx)"></Button>
+				</BoxesList>
+			</Box>
+			<Box v-if="place == 3">
+				<h3>Kies een wagenonderdeel</h3>
+				<p>Hang deze krat aan een specifiek wagenonderdeel</p>
+				<BoxesList gap="8px">
+					<Button v-for="(part, idx) in constructionParts" :key="idx" look="green" :title="part" @click="setConstructionPart(idx)"></Button>
+				</BoxesList>
+			</Box>
+		</BoxesList>
+	</BasePage>
+</template>
+
+<script>
+	import BasePage from "@/layouts/BasePage.vue";
+	import Box from "@/components/base/Box.vue";
+	import BoxesList from "@/components/base/BoxesList.vue";
+	import Button from "@/components/base/Button.vue";
+	import { ref, computed } from "vue";
+	import { useStore } from "vuex";
+	import { useRouter } from "vue-router";
+
+	export default {
+		components: {
+			BasePage,
+			Box,
+			BoxesList,
+			Button,
+		},
+		setup() {
+			const store = useStore();
+			const router = useRouter();
+			const _place = ref();
+      const constructionParts = {
+        0: "Algemeen"
+      }
+
+			function setPlace(place) {
+				_place.value = place;
+				store.commit("changeCurrentAction", place);
+				if (place != 3) {
+					router.push("/boxes/scan");
+				}
+			}
+
+			function setConstructionPart(place) {
+				store.commit("changeConstructionPart", place);
+				router.push("/boxes/scan");
+			}
+
+			return {
+				places: computed(() => store.state.places),
+				place: _place,
+        constructionParts,
+				setPlace,
+				setConstructionPart,
+			};
+		},
+	};
+</script>
+
+<style scoped>
+	.desktop-only {
+		@media (max-width: 48em) {
+			display: none;
+		}
+	}
+</style>

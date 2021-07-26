@@ -58,6 +58,11 @@
 		grid-template-columns: 30px 1fr 30px;
 		align-items: center;
 		gap: var(--p-side);
+		/* position: fixed;
+		left: 0;
+		right: 0;
+		top: 0;
+		z-index: 10; */
 
 		& h1 {
 			font-size: inherit;

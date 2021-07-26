@@ -1,15 +1,28 @@
 <template>
-  <div class="list">
-    <slot></slot>
-  </div>
+	<div class="list" :style="{ '--gap': gap }">
+		<slot></slot>
+	</div>
 </template>
 
+<script>
+	export default {
+		props: {
+			gap: {
+				type: String,
+				default: "20px",
+			},
+		},
+	};
+</script>
+
 <style scoped>
-  .list {
-    display: flex;
-    flex-direction: column;
-    & >>> > * + * {
-      margin-top: 20px;
-    }
-  }
+	.list {
+		--gap: 20px;
+		display: flex;
+		flex-direction: column;
+
+		&:deep( > * + *){
+			margin-top: var(--gap);
+		}
+	}
 </style>
