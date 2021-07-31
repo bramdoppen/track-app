@@ -2,8 +2,18 @@
   <BasePage title="Instellingen">
 		<BoxesList>
       <Box>
+        <h3>Leveringen</h3>
+        <p>Beheer verwachtte bloemleveringen per uur</p>
+        <Button to="/flowers/list" look="green" title="Bloemleveringen"></Button>
+      </Box>
+      <Box>
+        <h3>Wagenonderdelen</h3>
+        <p>Beheer verschillende wagenonderdelen</p>
+        <Button to="/flowers/list" look="green" title="Wagenonderdelen"></Button>
+      </Box>
+      <Box>
         <h3>Dahlias</h3>
-        <p>Dahliasoorten behren</p>
+        <p>Dahliasoorten beheren</p>
         <Button to="/flowers/list" look="green" title="Dahliasoorten"></Button>
       </Box>
     </BoxesList>

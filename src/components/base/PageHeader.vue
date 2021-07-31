@@ -1,5 +1,5 @@
 <template>
-	<header class="header">
+	<header class="header" :class="{'s-translucent': translucent}">
 		<div class="button-container">
 			<Button look="square gray" icon="arrow" iconSize="sm" v-if="showBackButton" @click="prevPage" />
 		</div>
@@ -23,6 +23,10 @@
 		props: {
 			title: {
 				type: String,
+			},
+			translucent: {
+				type: Boolean,
+				default: false,
 			},
 		},
 
@@ -58,11 +62,12 @@
 		grid-template-columns: 30px 1fr 30px;
 		align-items: center;
 		gap: var(--p-side);
-		/* position: fixed;
-		left: 0;
-		right: 0;
-		top: 0;
-		z-index: 10; */
+
+		&.s-translucent {
+			background: transparent;
+			border-color: transparent;
+			color: #fff;
+		}
 
 		& h1 {
 			font-size: inherit;

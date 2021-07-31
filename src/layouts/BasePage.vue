@@ -1,10 +1,10 @@
 <template>
-	<div class="page">
-		<PageHeader :title="title" />
+	<div class="page" :class="{'s-translucent': translucent}">
+		<PageHeader class="page-header" :translucent="translucent" :title="title" />
 		<main class="main">
 			<slot></slot>
 		</main>
-		<BottomBar />
+		<BottomBar v-if="!hideBottomBar"/>
 	</div>
 </template>
 
@@ -22,6 +22,14 @@
 			title: {
 				type: String,
 			},
+			translucent: {
+				type: Boolean,
+				default: false,
+			},
+			hideBottomBar: {
+				type: Boolean,
+				default: false,
+			}
 		},
 	};
 </script>
@@ -35,6 +43,12 @@
 		height: 100vh;
 		height: calc(var(--vh, 1vh) * 100);
 		overflow: hidden;
+		&.s-translucent, &.s-translucent > .main {
+			background: #000;
+		}
+	}
+	.page-header {
+		z-index: 1;
 	}
 	.main {
 		flex: 1 0 auto;
