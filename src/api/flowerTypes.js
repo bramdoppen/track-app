@@ -20,7 +20,9 @@ const fetchSingleFlowerType = (id) => {
 		.get()
 		.then((doc) => {
 			if (doc.exists) {
-				return { id: doc.id, name: doc.data().name };
+				return doc.data();
+			} else {
+				console.log("No such document!");
 			}
 		});
 };

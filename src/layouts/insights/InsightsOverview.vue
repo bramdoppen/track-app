@@ -1,5 +1,9 @@
 <template>
   <BasePage title="Inzicht">
+		<Box>
+			<h3>201/1020</h3>
+			<p>Kratten aangemaakt</p>
+		</Box>
     Test
 		<BoxesPerStatus :rawBoxes="rawBoxes" :state="1"></BoxesPerStatus>
 
@@ -12,12 +16,14 @@
 	import { db } from "@/functions/firebaseConfig.js";
 	import BasePage from "@/layouts/BasePage.vue";
 	import BoxesPerStatus from "@/components/charts/BoxesPerStatus.vue";
+	import Box from "@/components/base/Box.vue";
 	import { useStore } from "vuex";
 
 	export default {
 		components: {
 			BasePage,
 			BoxesPerStatus,
+			Box,
 		},
 		setup() {
 			const store = useStore();

@@ -1,12 +1,10 @@
 <template>
-	<BasePage title="Dahlia toevoegen">
+	<BasePage title="Onderdeel toevoegen">
 		<div>
 			<div v-if="isLoading">Laden...</div>
-			<form class="form" @submit.prevent="handleSubmit(flowerId, flower)" v-if="!isLoading">
-				<FormInput label="Bloem ID" placeholder="1100" v-model:value="flowerId" />
-				<FormInput label="Naam bloem" placeholder="White Aster" v-model:value="flower.name" />
-				<FormInput label="Aantal per krat" placeholder="400" v-model:value="flower.boxAmount" />
-				<FormInput label="Kleurcode" placeholder="#fff" v-model:value="flower.colorHex" />
+			<form class="form" @submit.prevent="handleSubmit(constructionPart)" v-if="!isLoading">
+				<FormInput label="Naam onderdeel" placeholder="Naam onderdeel" v-model:value="constructionPart.name" />
+				<FormInput label="Totale oppervlakte (m2)"  placeholder="m2" v-model:value="constructionPart.totalSurface" />
 				<Button type="submit" title="Opslaan" />
 			</form>
 		</div>
@@ -19,7 +17,7 @@
 	import FormInput from "@/components/base/form/FormInput.vue";
 	import { useRoute, useRouter} from "vue-router";
 	import { ref, watch, onMounted } from "vue";
-	import { fetchSingleFlowerType, setFlowerType } from "@/api/flowerTypes.js";
+	import { fetchSingle, createItem, updateItem } from "@/api/constructionParts.js";
 
 	export default {
 		components: {
@@ -32,24 +30,22 @@
 			const route = useRoute();
 			const router = useRouter();
 			const routeId = route.params.id;
-			const flowerId = ref();
+			const partId = ref();
 
 			// Get flowerTypes
-			const flower = ref({
+			const constructionPart = ref({
 				name: null,
-				code: null,
-				boxAmount: 400,
-				colorHex: null,
+				totalSurface: null,
 			});
 
 			// Get data (if id specified in route)
 			const getAll = async (id) => {
-				flower.value = await fetchSingleFlowerType(id).then((response) => {isLoading.value = false; return response});
+				constructionPart.value = await fetchSingle(id).then((response) => {isLoading.value = false; return response});
 			};
 
 			if (routeId) {
 				isLoading.value = true;
-				flowerId.value = routeId;
+				partId.value = routeId;
 				onMounted(() => getAll(routeId));
 
 				watch(
@@ -60,15 +56,20 @@
 				);
 			}
 
-			const handleSubmit = (flwId, flower) => {
-				setFlowerType(flwId, flower).then(() => {
-					router.go(-1)
-				});
+			const handleSubmit = (part) => {
+        if(routeId) {
+          updateItem(routeId, part).then(() => {
+            router.go(-1);
+          });
+        } else {
+          createItem(part).then(() => {
+            router.go(-1);
+          });
+        }
 			};
 
 			return {
-				flower,
-				flowerId,
+				constructionPart,
 				handleSubmit,
 				isLoading,
 			};

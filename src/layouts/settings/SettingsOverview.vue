@@ -1,15 +1,15 @@
 <template>
   <BasePage title="Instellingen">
 		<BoxesList>
-      <Box>
+      <!-- <Box>
         <h3>Leveringen</h3>
         <p>Beheer verwachtte bloemleveringen per uur</p>
         <Button to="/flowers/list" look="green" title="Bloemleveringen"></Button>
-      </Box>
+      </Box> -->
       <Box>
         <h3>Wagenonderdelen</h3>
         <p>Beheer verschillende wagenonderdelen</p>
-        <Button to="/flowers/list" look="green" title="Wagenonderdelen"></Button>
+        <Button to="/parts/list" look="green" title="Wagenonderdelen"></Button>
       </Box>
       <Box>
         <h3>Dahlias</h3>

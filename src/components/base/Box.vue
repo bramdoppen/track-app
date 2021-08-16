@@ -24,14 +24,14 @@
 		font-weight: 300;
 		background: #fff;
 
-		& > * {
+		& >>> > * {
 			margin: 0;
 
 			& + * {
-				margin-top: 4px;
+				margin-top: 6px;
 			}
-			& + button {
-				margin-top: 20px;
+			& + .button {
+				margin-top: 16px;
 			}
 
 			&.h3 {

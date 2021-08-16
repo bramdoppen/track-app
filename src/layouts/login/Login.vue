@@ -165,11 +165,11 @@
 	label {
 		font-weight: 600;
 		font-size: 14px;
-		font-family: system-ui;
+		font-family: var(--font-title);
 	}
 
 	input, select {
-		font-family: system-ui;
+		font-family: var(--font-title);
 		padding: 19px 25px;
 		font-size: 16px;
 		border: 2px solid #eaeaea;

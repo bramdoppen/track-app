@@ -1,5 +1,5 @@
 <template>
-	<BasePage title="Alle Dahlia's">
+	<BasePage title="Wagenonderdelen">
 		<div>
 			<BoxesList gap="8px">
 				<transition-group name="trans-list">
@@ -15,7 +15,7 @@
 						"
 					/>
 				</transition-group>
-				<Button to="/flowers/create" look="green" title="Nieuwe dahlia toevoegen"></Button>
+				<Button to="/parts/create" look="green" title="Wagenonderdeel toevoegen"></Button>
 			</BoxesList>
 		</div>
 	</BasePage>
@@ -28,7 +28,7 @@
 	import Button from "@/components/base/Button.vue";
 	import { useRouter } from "vue-router";
 	import { ref, onMounted } from "vue";
-	import { fetchFlowerTypes } from "@/api/flowerTypes.js";
+	import { fetchAll } from "@/api/constructionParts.js";
 
 	export default {
 		components: {
@@ -40,15 +40,15 @@
 		setup() {
 			const router = useRouter();
 
-			// Get flowerTypes
+			// Get constructionParts
 			const data = ref([]);
 			const getAll = async () => {
-				data.value = await fetchFlowerTypes();
+				data.value = await fetchAll();
 			};
 
 			onMounted(getAll);
 			function onEdit(item) {
-				router.push({ name: "flowers-edit", params: { id: item.id } });
+				router.push({ name: "parts-edit", params: { id: item.id } });
 			}
 			return {
 				data,

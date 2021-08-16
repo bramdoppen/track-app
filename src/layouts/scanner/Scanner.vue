@@ -9,7 +9,7 @@
 			</section>
 			<ScanStatus :scanCount="scanCount" :scanError="scanError" :isProcessing="isProcessing"></ScanStatus>
 			<section class="frame-section">
-				<h4 class="qrscanner__title">
+				<h4 class="qrscanner__title" v-show="$route.query.detail !== 'true' ">
 					<span class="qrscanner__title--gray">Gekozen instelling:</span>
 					<span>{{ currActionName }}</span>
 					<span v-if="currConstructionPart.name">{{ currConstructionPart.name }}</span>
@@ -71,9 +71,13 @@
 			onDecode(content) {
 				if (content.length === 20) {
 					this.kratId = content;
-					this.isProcessing = true;
-					this.makeDocReq(content);
-					this.scanCount++;
+					if(this.$route.query.detail == "true") {
+						this.$router.push({ name: "boxes-detail", params: { id: this.kratId } });
+					} else {
+						this.isProcessing = true;
+						this.makeDocReq(content);
+						this.scanCount++;
+					}
 				}
 			},
 			onInit(promise) {
@@ -172,6 +176,7 @@
 			},
 		},
 		beforeUnmount() {
+			store.commit("changeCurrentAction", null);
 			store.commit("changeConstructionPart", { id: null, name: null });
 		},
 	};

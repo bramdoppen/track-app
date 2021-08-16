@@ -6,11 +6,11 @@ const addBox = () => {
 		.collection("boxes")
 		.get()
 		.then((querySnapshot) => {
-      const arr = [];
+			const arr = [];
 			querySnapshot.forEach((doc) => {
 				arr.push({ id: doc.id, name: doc.data().name });
 			});
-      return arr;
+			return arr;
 		});
 };
 
@@ -19,17 +19,31 @@ const fetchAllBoxes = () => {
 		.collection("boxes")
 		.get()
 		.then((querySnapshot) => {
-      const arr = [];
+			const arr = [];
 			querySnapshot.forEach((doc) => {
 				arr.push({ id: doc.id, data: doc.data() });
 			});
-      return arr;
+			return arr;
+		});
+};
+
+const fetchSingleBox = (id) => {
+	return db
+		.collection("boxes")
+		.doc(id)
+		.get()
+		.then((doc) => {
+			if (doc.exists) {
+				return doc.data();
+			} else {
+				console.log("No such document!");
+			}
 		});
 };
 
 const createBox = function(flower) {
 	const currUser = store.state.user;
-	console.log(currUser)
+	console.log(currUser);
 	const currDate = new Date();
 	const currGroup = store.state.corsoGroup || store.state.user.corsoGroup;
 	return db.collection("boxes").add({
@@ -120,4 +134,4 @@ const updateBoxState = function(kratId, prevState, newState, constructionPart) {
 			updateLog: fb.firestore.FieldValue.arrayUnion(newUpdate),
 		});
 };
-export { createBox, addBox, updateBoxState, fetchAllBoxes };
+export { createBox, addBox, updateBoxState, fetchAllBoxes, fetchSingleBox};

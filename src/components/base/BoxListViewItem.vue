@@ -3,7 +3,6 @@
 		<strong class="box-title">{{ title }}</strong>
 		<span class="box-sub">{{ sub }}</span>
 		<Button class="box-button-edit" look="xsmall" title="Bewerk" v-if="onEdit" @click="handleEdit()" />
-		<Button class="box-button-delete" look="xsmall" title="Delete" v-if="onDelete" @click="handleDelete()" />
 	</div>
 </template>
 
@@ -28,23 +27,15 @@
 				type: Function,
 				required: false,
 			},
-			onDelete: {
-				type: Function,
-				required: false,
-			},
 		},
 		setup(props) {
-			const { onEdit, onDelete } = toRefs(props);
+			const { onEdit } = toRefs(props);
 
 			const handleEdit = () => {
 				onEdit.value();
 			};
-			const handleDelete = () => {
-				onDelete.value();
-			};
 			return {
 				handleEdit,
-				handleDelete,
 			};
 		},
 	};
@@ -52,8 +43,8 @@
 
 <style scoped>
 	.box-item {
-		border-radius: 30px;
-		padding: 30px;
+		border-radius: 20px;
+		padding: 16px 24px;
 		box-shadow: 0px 3px 10px rgb(0 0 0 / 3%);
 		font-weight: 300;
 		background: #fff;

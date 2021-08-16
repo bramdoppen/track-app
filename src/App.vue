@@ -19,12 +19,12 @@
 		--color-error: red;
 		--font-special: "Bungee", "Arial Black", sans-serif;
 		--font-title: "Inter", "Arial Black", sans-serif;
-		--font-base: system-ui, sans-serif;
+		--font-base: "Inter", sans-serif;
 		--font-print: "Source Sans Pro", sans-serif;
 		--fz-base: 16px;
 		--p-side: 20px;
 	}
-
+	@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;600;700&display=swap');
 	@font-face {
 		font-family: "Bungee";
 		src: url("/fonts/Bungee-Regular_20200107.woff2") format("woff2"), url("/fonts/Bungee-Regular_20200107.woff") format("woff");

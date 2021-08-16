@@ -17,7 +17,7 @@
 			<Box>
 				<h3>Bekijk krat &#128300;</h3>
 				<p>Bekijk gegevens van een krat</p>
-				<Button to="/boxes/scan" look="green" title="Scan krat"></Button>
+				<Button to="/boxes/scan?detail=true" look="green" title="Scan krat"></Button>
 			</Box>
 			<Box>
 				<h3>Alle kratten</h3>
