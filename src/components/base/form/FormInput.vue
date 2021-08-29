@@ -1,7 +1,7 @@
 <template>
 	<div class="f-row">
 		<label v-if="label">{{ label }}</label>
-		<input :type="type" :placeholder="placeholder" :value="value" @input="$emit('update:value', $event.target.value)" />
+		<input :type="type" :placeholder="placeholder" :value="value" @input="$emit('update:value', $event.target.value)" v-bind="$attrs"/>
 	</div>
 </template>
 
@@ -52,6 +52,11 @@
 		border-radius: 10px;
 		outline: 0;
 		transition: border-color 0.2s ease;
+		
+		&[disabled] {
+			background: #eaeaea;
+
+		}
 	}
 	input:focus,
 	select:focus {

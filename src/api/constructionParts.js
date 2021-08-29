@@ -34,6 +34,9 @@ const updateItem = (id, item) => {
 	return db.collection("constructionParts").doc(id).update({
     name: item.name,
     totalSurface: item.totalSurface,
+		calculatedTotalAmountBoxes: item.calculatedTotalAmountBoxes,
+		calculatedTotalAmountFlowers: item.calculatedTotalAmountFlowers,
+    calculatedFlowers: item.calculatedFlowers,
     updatedOn: currDate,
     updatedBy: {
       id: currUser.uid,
@@ -49,6 +52,12 @@ const createItem = function(item) {
 	return db.collection("constructionParts").add({
     name: item.name,
     totalSurface: item.totalSurface,
+    assignedBoxes: [],
+    processedBoxes: [],
+		processedTotalAmountFlowers: 0,
+		calculatedTotalAmountBoxes: item.calculatedTotalAmountBoxes,
+		calculatedTotalAmountFlowers: item.calculatedTotalAmountFlowers,
+    calculatedFlowers: item.calculatedFlowers,
 		belongsToCorsoGroup: {
 			id: currGroup.id,
 			name: currGroup.name,
@@ -63,4 +72,11 @@ const createItem = function(item) {
 	});
 };
 
-export { fetchAll, fetchSingle, createItem, updateItem };
+const deleteItem = function(id, item) {
+	console.log(item.assignedBoxes.length == 0 && item.processedTotalAmountFlowers == 0)
+	if(item.assignedBoxes.length == 0 && item.processedTotalAmountFlowers == 0) {
+		return db.collection("constructionParts").doc(id).delete();
+	}
+}
+
+export { fetchAll, fetchSingle, createItem, updateItem, deleteItem };

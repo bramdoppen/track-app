@@ -34,7 +34,7 @@
 			// Filter results
 			const filteredResults = computed(() => {
 				if (searchKey.value && searchKey.value.length > 0) {
-					return flowerTypes.value.filter((obj) => Object.keys(obj).some((key) => obj[key].toLowerCase().includes(searchKey.value)));
+					return flowerTypes.value.filter((obj) => Object.keys(obj).some((key) => obj[key].toString().toLowerCase().includes(searchKey.value)));
 				}
 				return [];
 			});

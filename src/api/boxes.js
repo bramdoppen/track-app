@@ -14,9 +14,10 @@ const addBox = () => {
 		});
 };
 
-const fetchAllBoxes = () => {
+const fetchAllBoxes = (limit) => {
+	const pageLimit = limit ? limit : 100;
 	return db
-		.collection("boxes")
+		.collection("boxes").limit(pageLimit)
 		.get()
 		.then((querySnapshot) => {
 			const arr = [];
@@ -43,11 +44,12 @@ const fetchSingleBox = (id) => {
 
 const createBox = function(flower) {
 	const currUser = store.state.user;
-	console.log(currUser);
 	const currDate = new Date();
 	const currGroup = store.state.corsoGroup || store.state.user.corsoGroup;
+	console.log(flower)
 	return db.collection("boxes").add({
 		state: 0,
+		amountInBox: flower.boxAmount,
 		flowerType: flower,
 		belongsToConstructionPart: null,
 		belongsToCorsoGroup: {
@@ -77,7 +79,7 @@ const createBox = function(flower) {
 	});
 };
 
-const updateBoxState = function(kratId, prevState, newState, constructionPart) {
+const updateBoxState = function(kratId, prevState, newState, constructionPart, amountLeftInBox) {
 	const currDate = new Date();
 	const currUser = store.state.user;
 
@@ -113,6 +115,7 @@ const updateBoxState = function(kratId, prevState, newState, constructionPart) {
 		message: getUpdatedMessage(),
 		fromState: prevState,
 		toState: newState,
+		amountLeftInBox: amountLeftInBox,
 		updatedOn: currDate,
 		updatedBy: {
 			id: currUser.uid,
@@ -120,18 +123,25 @@ const updateBoxState = function(kratId, prevState, newState, constructionPart) {
 		},
 	};
 
+	const updatedFields = {
+		state: newState,
+		belongsToConstructionPart: getConstructionPart(),
+		updatedOn: currDate,
+		updatedBy: {
+			id: currUser.uid,
+			name: currUser.displayName,
+		},
+		updateLog: fb.firestore.FieldValue.arrayUnion(newUpdate),
+	}
+
+	// Only set amountleftinbox when specified
+	if(amountLeftInBox) {
+		updatedFields.amountInBox = amountLeftInBox
+	}
+
 	return db
 		.collection("boxes")
 		.doc(kratId)
-		.update({
-			state: newState,
-			belongsToConstructionPart: getConstructionPart(),
-			updatedOn: currDate,
-			updatedBy: {
-				id: currUser.uid,
-				name: currUser.displayName,
-			},
-			updateLog: fb.firestore.FieldValue.arrayUnion(newUpdate),
-		});
+		.update(updatedFields);
 };
 export { createBox, addBox, updateBoxState, fetchAllBoxes, fetchSingleBox};

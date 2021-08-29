@@ -12,8 +12,6 @@ const prodConfig = {
 	measurementId: process.env.VUE_APP_FIREBASE_MEASUREMENT_ID_PROD,
 };
 
-console.log(process.env.VUE_APP_FIREBASE_API_KEY_PROD)
-
 const config = (() => {
 	return process.env.NODE_ENV === "development" ? prodConfig : prodConfig;
 })();

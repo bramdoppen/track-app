@@ -1,10 +1,25 @@
 <template>
 	<router-view />
 </template>
+
 <script>
-	let vh = window.innerHeight * 0.01;
-	// Then we set the value in the --vh custom property to the root of the document
-	document.documentElement.style.setProperty("--vh", `${vh}px`);
+import { useWindowSize } from '@vueuse/core'
+import { watchEffect } from 'vue';
+export default {
+	setup() {
+		const { height } = useWindowSize();
+
+		function setVh(innerHeight) {
+			let vh = innerHeight * 0.01;
+			// Then we set the value in the --vh custom property to the root of the document
+			document.documentElement.style.setProperty("--vh", `${vh}px`);
+		}
+		
+		watchEffect(() => {
+			setVh(height.value)
+		});
+	},
+}
 </script>
 <style>
 	:root {

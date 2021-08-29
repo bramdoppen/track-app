@@ -1,5 +1,5 @@
 <template>
-	<component :is="tag" class="button" :type="compType" :class="[type, look]" :to="to">
+	<component :is="tag" class="button" :type="compType" :class="[type, look]" :to="to" v-bind="$attrs">
 		<span>{{ title }}</span>
 		<Icon :icon="icon" :size="iconSize" v-if="icon" />
 	</component>
@@ -123,6 +123,15 @@
 		&.green {
 			font-size: 18px;
 			background: var(--color-secondary);
+			padding: 5px 10px;
+			min-height: 50px;
+			border-radius: 15px;
+		}
+
+		&.error {
+			font-size: 18px;
+			background: var(--color-error);
+			color: #fff;
 			padding: 5px 10px;
 			min-height: 50px;
 			border-radius: 15px;

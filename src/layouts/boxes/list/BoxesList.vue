@@ -1,13 +1,16 @@
 <template>
 	<BasePage title="Alle Kratten">
 		<div>
-			<BoxesList gap="8px">
+			<div class="loading" v-if="ui.loading">
+				Laden...
+			</div>
+			<BoxesList gap="8px" v-if="!ui.loading && data">
 				<transition-group name="trans-list">
 					<BoxListViewItem
 						v-for="item in data"
 						:key="item.id"
 						:title="`${item.data.flowerType.id} - ${item.data.flowerType.name}`"
-						:sub="`ID: ${item.id}. State: ${item.data.state}. Created: ${moment(new Date(item.data.createdOn.seconds * 1000)).fromNow()}`"
+						:sub="`${item.id} | ${places[item.data.state]} | ${dayjs(new Date(item.data.createdOn.seconds * 1000)).fromNow()}`"
 						:onEdit="
 							() => {
 								onEdit(item);
@@ -24,10 +27,14 @@
 	import BasePage from "@/layouts/BasePage.vue";
 	import BoxListViewItem from "@/components/base/BoxListViewItem.vue";
 	import BoxesList from "@/components/base/BoxesList.vue";
-	import moment from "moment";
+	import dayjs from "dayjs";
+	import FromNow from "dayjs/plugin/relativeTime";
+	dayjs.extend(FromNow);
+
+	import { useStore } from "vuex";
 	import { useRouter } from "vue-router";
 
-	import { ref, onMounted } from "vue";
+	import { reactive, ref, onMounted } from "vue";
 	import { fetchAllBoxes } from "@/api/boxes.js";
 
 	export default {
@@ -37,24 +44,33 @@
 			BoxesList,
 		},
 		setup() {
+			const store = useStore();
 			const router = useRouter();
+			const ui = reactive({
+				loading: true,
+			});
+
 			// Get flowerTypes
 			const data = ref([]);
 			const getAll = async () => {
-				data.value = await fetchAllBoxes();
+				ui.loading = true;
+				data.value = await fetchAllBoxes().finally((response) => {
+					ui.loading = false;
+					return response;
+				});
 			};
 
 			onMounted(getAll);
 			function onEdit(item) {
-				router.push({ name: "boxes-edit", params: { id: item.id } });
+				router.push({ name: "boxes-detail", params: { id: item.id } });
 			}
+
 			return {
+				ui,
 				data,
-				moment,
-				momentDate: moment()
-					.startOf("day")
-					.fromNow(),
+				dayjs,
 				onEdit,
+				places: store.state.places
 			};
 		},
 	};

@@ -8,12 +8,12 @@
 
 <script>
 	import { toRefs } from "vue";
-  import Button from "@/components/base/Button.vue";
+	import Button from "@/components/base/Button.vue";
 
 	export default {
-    components: {
-      Button,
-    },
+		components: {
+			Button,
+		},
 		props: {
 			title: {
 				type: String,
@@ -52,6 +52,7 @@
 		grid-template-areas: "title edit delete" "sub edit delete";
 		grid-template-columns: 1fr auto auto;
 		grid-template-rows: 1fr auto;
+		align-items: center;
 		& > .box-title {
 			grid-area: title;
 		}
