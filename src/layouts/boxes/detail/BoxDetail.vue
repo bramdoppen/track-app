@@ -9,7 +9,15 @@
 					<span>Bloemsoort:</span>
 				</div>
 				<div class="faketable-content">
-					<div>{{ data.flowerType.id }} - {{ data.flowerType.name }}</div>
+					<div>{{ data.flowerType.id }} - {{ data.flowerType.name }} ({{ data.flowerType.boxAmount }} per krat)</div>
+				</div>
+			</div>
+			<div class="faketable-row">
+				<div class="faketable-head">
+					<span>Bloemen in krat:</span>
+				</div>
+				<div class="faketable-content">
+					<div>{{ data.amountInBox }} </div>
 				</div>
 			</div>
 			<div class="faketable-row">
@@ -66,7 +74,7 @@
 				</div>
 				<div class="faketable-content" v-if="data.updateLog" style="margin-top: 10px;">
 					<div class="faketable-row logboek-item" v-for="(log, logIndex) in data.updateLog" :key="logIndex">
-						<span class="logboek-timestamp">{{ dayjs(new Date(log.updatedOn.seconds * 1000)).calendar() }}</span>
+						<span class="logboek-timestamp">{{ dayjs.unix(log.updatedOn.seconds).calendar() }}</span>
 						<span class="logboek-user">{{ log.updatedBy.name }}</span>
 						<span class="logboek-message">{{ log.message }}</span>
 					</div>

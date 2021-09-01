@@ -364,6 +364,10 @@
 			padding: 0 !important;
       background: #fff !important;
 		}
+		#app,
+		.page {
+			all: unset !important;
+		}
 		.grid,
 		.printconfirm,
     .hide-on-print,

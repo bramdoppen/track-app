@@ -12,10 +12,12 @@ export default createStore({
 			2: "Gespijkerd",
 			3: "Op steiger",
 			4: "Afgerond",
+			6: "Verkocht",
 		},
 		currAction: null,
 		currActionName: null,
 		currConstructionGroup: null,
+		s: null,
 		currConstructionPart: {
 			name: null,
 			id: null,
@@ -43,6 +45,11 @@ export default createStore({
 					name: payload.name,
 					id: payload.id,
 				};
+			}
+		},
+		changeSellReason(state, payload) {
+			if (payload) {
+				state.sellReason = payload;
 			}
 		},
 	},

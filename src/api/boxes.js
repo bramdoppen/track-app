@@ -46,7 +46,6 @@ const createBox = function(flower) {
 	const currUser = store.state.user;
 	const currDate = new Date();
 	const currGroup = store.state.corsoGroup || store.state.user.corsoGroup;
-	console.log(flower)
 	return db.collection("boxes").add({
 		state: 0,
 		amountInBox: flower.boxAmount,
@@ -79,9 +78,10 @@ const createBox = function(flower) {
 	});
 };
 
-const updateBoxState = function(kratId, prevState, newState, constructionPart, amountLeftInBox) {
+const updateBoxState = function(kratId, prevState, newState, constructionPart, amountLeftInBox, customMessage) {
 	const currDate = new Date();
 	const currUser = store.state.user;
+	console.log(kratId, prevState, newState, constructionPart, amountLeftInBox)
 
 	// Get updated message
 	const getUpdatedMessage = () => {
@@ -112,10 +112,10 @@ const updateBoxState = function(kratId, prevState, newState, constructionPart, a
 
 	// Build update message
 	const newUpdate = {
-		message: getUpdatedMessage(),
+		message: customMessage ? customMessage : getUpdatedMessage(),
 		fromState: prevState,
 		toState: newState,
-		amountLeftInBox: amountLeftInBox,
+		amountLeftInBox: amountLeftInBox ? amountLeftInBox : null,
 		updatedOn: currDate,
 		updatedBy: {
 			id: currUser.uid,

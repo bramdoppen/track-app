@@ -3,8 +3,8 @@
 		<div class="main-scanner-content">
 			<section class="frame-section">
 				<h4 class="qrscanner__title qrscanner__title--gray">
-					<span v-show="scanCount === 0">Richt camera op QR code</span>
-					<span>{{ errorMessage }}</span>
+					<span v-if="scanCount === 0 && !errorMessage">Richt camera op QR code</span>
+					<span v-if="errorMessage">{{ errorMessage }}</span>
 				</h4>
 			</section>
 			<ScanStatus :scanCount="scanCount" :scanError="scanError" :isProcessing="isProcessing"></ScanStatus>
@@ -13,6 +13,7 @@
 					<span class="qrscanner__title--gray">Gekozen instelling:</span>
 					<span>{{ currActionName }}</span>
 					<span v-if="currConstructionPart.name">{{ currConstructionPart.name }}</span>
+					<span v-if="currActionName === 'Verkocht' && sellReason">Reden verkoop: {{ sellReason }}</span>
 				</h4>
 				<Button class="button" @click="prevPage" title="Klaar"></Button>
 			</section>
@@ -76,7 +77,6 @@
 					} else {
 						this.isProcessing = true;
 						this.makeDocReq(content);
-						this.scanCount++;
 					}
 				}
 			},
@@ -103,10 +103,13 @@
 				this.currAction = parseInt(this.currAction);
 
 				const updateConstParts = (boxId, boxData) => {
+					console.log(boxId, boxData, " boxdata")
 					const emptyBox = {
 						id: boxId,
 						flowerType: boxData.flowerType,
+						amountInBox: boxData.amountInBox ? boxData.amountInBox : 0
 					};
+					
 					if (this.currConstructionPart.id && this.currAction == 3) {
 						// Wanneer toegewezen aan wagenonderdeel -> plaats box in Assigned Boxes (en haal hem weg bij Processed, als hij daar al bestaat);
 						db.collection("constructionParts")
@@ -120,8 +123,22 @@
 						db.collection("constructionParts")
 							.doc(boxData.belongsToConstructionPart.id)
 							.update({
-								processedBoxes: fb.firestore.FieldValue.arrayUnion(emptyBox),
 								assignedBoxes: fb.firestore.FieldValue.arrayRemove(emptyBox),
+							});
+
+						emptyBox.amountInBox = 0;
+						db.collection("constructionParts")
+							.doc(boxData.belongsToConstructionPart.id)
+							.update({
+								processedBoxes: fb.firestore.FieldValue.arrayUnion(emptyBox),
+								processedTotalAmountFlowers: fb.firestore.FieldValue.increment(emptyBox.amountInBox),
+							});
+
+						// Box is empty. Set boxamount to zero
+						db.collection("boxes")
+							.doc(boxId)
+							.update({
+								amountInBox: emptyBox.amountInBox,
 							});
 					}
 					// Optie voor ' partially completed on this constructionpart ';
@@ -134,10 +151,12 @@
 					.then((doc) => {
 						if (doc.exists) {
 							const constructionPart = this.currConstructionPart.id ? { id: this.currConstructionPart.id, name: this.currConstructionPart.name } : null;
-							updateBoxState(this.kratId, doc.data().state, this.currAction, constructionPart);
+							const customMessage = this.sellReason ? 'Verkocht. Reden verkoop: ' + this.sellReason : null;
+							updateBoxState(this.kratId, doc.data().state, this.currAction, constructionPart, null, customMessage);
 							updateConstParts(doc.id, doc.data());
 							this.scanError = false;
-							this.errorMessage = "";
+							this.errorMessage = null;
+							this.scanCount++;
 						} else {
 							anime({
 								targets: ".qrscanner__item",
@@ -147,14 +166,15 @@
 								background: "rgba(171, 93, 111, 1)",
 							});
 							this.scanError = true;
-							this.errorMessage = "Krat bestaat niet in Database";
+							this.errorMessage = "Krat bestaat niet in database";
 						}
-					})
-					.then(() => {
-						this.isProcessing = false;
+
 					})
 					.catch((error) => {
 						(this.errorMessage = "Error:"), error;
+					})
+					.finally(() => {
+						this.isProcessing = false;
 					});
 			},
 			turnCameraOn() {
@@ -173,6 +193,9 @@
 			},
 			currConstructionPart() {
 				return store.state.currConstructionPart;
+			},
+			sellReason() {
+				return store.state.sellReason;
 			},
 		},
 		beforeUnmount() {

@@ -8,6 +8,7 @@
 				<transition-group name="trans-list">
 					<BoxListViewItem
 						v-for="item in data"
+						:class="{'inactive': item.data.state > 4}"
 						:key="item.id"
 						:title="`${item.data.flowerType.id} - ${item.data.flowerType.name}`"
 						:sub="`${item.id} | ${places[item.data.state]} | ${dayjs(new Date(item.data.createdOn.seconds * 1000)).fromNow()}`"
@@ -75,3 +76,10 @@
 		},
 	};
 </script>
+
+<style>
+.inactive {
+	opacity: 0.5;
+}
+
+</style>

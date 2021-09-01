@@ -78,7 +78,7 @@
 						</div>
 						<div class="faketable-content" v-if="scanResult.data.updateLog" style="margin-top: 10px;">
 							<div class="faketable-row logboek-item" v-for="(log, logIndex) in scanResult.data.updateLog" :key="logIndex">
-								<span class="logboek-timestamp">{{ getDate(log.updatedOn.seconds) }}</span>
+								<span class="logboek-timestamp">{{ dayjs.unix(log.updatedOn.seconds) }}</span>
 								<span class="logboek-user">{{ log.updatedBy.name }}</span>
 								<span class="logboek-message">{{ log.message }}</span>
 							</div>
@@ -95,7 +95,7 @@
 	import Box from "@/components/base/Box.vue";
 	import BoxesList from "@/components/base/BoxesList.vue";
 	import Button from "@/components/base/Button.vue";
-
+	import dayjs from 'dayjs';
 	export default {
 		components: {
 			BasePage,
@@ -103,6 +103,11 @@
 			BoxesList,
 			Button,
 		},
+		setup() {
+			return {
+				dayjs
+			}
+		}
 	};
 </script>
 

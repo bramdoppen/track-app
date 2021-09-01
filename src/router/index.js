@@ -27,6 +27,12 @@ const routes = [
 				component: () => import("../layouts/boxes/create/CreateBoxes.vue"),
 			},
 			{
+				path: "sell",
+				name: "boxes-sell",
+				meta: { requiresAuth: true },
+				component: () => import("../layouts/boxes/sell/SellBoxes.vue"),
+			},
+			{
 				path: "list",
 				name: "boxes-list",
 				meta: { requiresAuth: true },

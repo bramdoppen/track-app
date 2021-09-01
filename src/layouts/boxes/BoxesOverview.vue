@@ -27,7 +27,7 @@
 			<Box>
 				<h3>Kratten uitchecken &#128163;</h3>
 				<p>Verkocht aan andere groep? Haal krat uit systeem</p>
-				<Button to="/boxes/list" look="green" title="Kratten uitchecken"></Button>
+				<Button to="/boxes/sell" look="green" title="Kratten uitchecken"></Button>
 			</Box>
 		</BoxesList>
 	</BasePage>
@@ -40,6 +40,7 @@
 	import Button from "@/components/base/Button.vue";
   import { computed } from "vue";
   import { useStore } from "vuex";
+	import { useWindowSize } from '@vueuse/core'
 
 	export default {
 		components: {
@@ -49,16 +50,17 @@
 			Button,
 		},
 		setup() {
+			const { width } = useWindowSize();
       const store = useStore();
       const randomQuotes = [
-        "wat zit jouw haar leuk!",
-        "zoals jij kratten scant, zo scant geen ander ze!",
-        "goed dat je er weer bent!",
+        // "wat zit jouw haar leuk!",
+        // "zoals jij kratten scant, zo scant geen ander ze!",
+        // "goed dat je er weer bent!",
         "glad to have you back.",
       ];
 
 			return {
-				isDesktop: window.innerWidth > 768,
+				isDesktop: computed(() => width.value > 768),
         user: computed(() => store.state.user),
         getRandomQuote: () => randomQuotes[Math.floor(Math.random() * randomQuotes.length)]
 			};

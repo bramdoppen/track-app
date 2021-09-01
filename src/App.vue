@@ -5,6 +5,7 @@
 <script>
 import { useWindowSize } from '@vueuse/core'
 import { watchEffect } from 'vue';
+
 export default {
 	setup() {
 		const { height } = useWindowSize();
@@ -39,14 +40,7 @@ export default {
 		--fz-base: 16px;
 		--p-side: 20px;
 	}
-	@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;600;700&display=swap');
-	@font-face {
-		font-family: "Bungee";
-		src: url("/fonts/Bungee-Regular_20200107.woff2") format("woff2"), url("/fonts/Bungee-Regular_20200107.woff") format("woff");
-		font-weight: normal;
-		font-style: normal;
-		font-display: swap;
-	}
+	@import url('https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@300;600;700&display=swap');
 
 	html,
 	body {
