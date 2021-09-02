@@ -28,6 +28,13 @@ export default createStore({
 			state.user = user;
 			state.corsoGroup = user.corsoGroup;
 		},
+		userSetActivation(state) {
+			state.user.isActivated = true;
+		},
+		userLogOut(state) {
+			state.user = null;
+			state.corsoGroup = null;
+		},
 		changeStartCol(state, payload) {
 			state.printerStartCol = payload;
 		},
@@ -56,6 +63,12 @@ export default createStore({
 	actions: {
 		userLogin({ commit }, user) {
 			commit("userLogin", user);
+		},
+		userSetActivation({ commit }) {
+			commit("userSetActivation");
+		},
+		userLogOut({ commit }) {
+			commit("userLogOut");
 		},
 	},
 	modules: {},

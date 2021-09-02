@@ -1,24 +1,10 @@
 import { fb, db } from "@/functions/firebaseConfig.js";
 import store from "@/store";
 
-const addBox = () => {
-	return db
-		.collection("boxes")
-		.get()
-		.then((querySnapshot) => {
-			const arr = [];
-			querySnapshot.forEach((doc) => {
-				arr.push({ id: doc.id, name: doc.data().name });
-			});
-			return arr;
-		});
-};
+const fetchAllBoxes = () => {
+	let request = db.collection("boxes").where("belongsToCorsoGroup.id", "==", store.state.corsoGroup.id)
 
-const fetchAllBoxes = (limit) => {
-	const pageLimit = limit ? limit : 100;
-	return db
-		.collection("boxes").limit(pageLimit)
-		.get()
+	return request.get()
 		.then((querySnapshot) => {
 			const arr = [];
 			querySnapshot.forEach((doc) => {
@@ -144,4 +130,4 @@ const updateBoxState = function(kratId, prevState, newState, constructionPart, a
 		.doc(kratId)
 		.update(updatedFields);
 };
-export { createBox, addBox, updateBoxState, fetchAllBoxes, fetchSingleBox};
+export { createBox, updateBoxState, fetchAllBoxes, fetchSingleBox};

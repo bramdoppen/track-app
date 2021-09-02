@@ -6,8 +6,8 @@
 					<BoxListViewItem
 						v-for="item in data"
 						:key="item.id"
-						:title="item.name"
-						:sub="item.id"
+						:title="item.data.name"
+						:sub="`${calculatePercentage(item)}% afgerond`"
 						:onEdit="
 							() => {
 								onEdit(item);
@@ -50,9 +50,17 @@
 			function onEdit(item) {
 				router.push({ name: "parts-edit", params: { id: item.id } });
 			}
+
+			function calculatePercentage(item) {
+				const calculated = item.data.calculatedTotalAmountFlowers;
+				const processed = item.data.processedTotalAmountFlowers;
+				return parseInt(processed/calculated * 100)
+			}
+
 			return {
 				data,
 				onEdit,
+				calculatePercentage
 			};
 		},
 	};

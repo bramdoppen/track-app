@@ -8,7 +8,7 @@ const fetchAll = () => {
 		.then((querySnapshot) => {
 			const arr = [];
 			querySnapshot.forEach((doc) => {
-				arr.push({ id: doc.id, name: doc.data().name });
+				arr.push({ id: doc.id, data: doc.data() });
 			});
 			return arr;
 		});

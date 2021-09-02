@@ -1,61 +1,85 @@
 <template>
-  <BasePage title="Inzicht">
-		<Box>
-			<h3>201/1020</h3>
-			<p>Kratten aangemaakt</p>
-		</Box>
-    Test
-		<BoxesPerStatus :rawBoxes="rawBoxes" :state="1"></BoxesPerStatus>
+	<BasePage title="Inzicht">
+		<BoxesList>
+			<div class="box-holder">
+			<Box>
+				<h3 v-if="data.length > 0">{{ data.length }}</h3>
+				<h3 v-else>-</h3>
+				<span>&#128230;  verwerkt</span>
+			</Box>
+			<Box>
+				<h3 v-if="data.length > 0">{{ data.length }}</h3>
+				<h3 v-else>-</h3>
+				<span>Kratten binnen</span>
+			</Box>
+			</div>
+			<Box>
+				<h3>Wagenonderdelen</h3>
+				{{ data }}
+				<p>Beheer verschillende wagenonderdelen</p>
+				<Button to="/parts/list" look="green" title="Wagenonderdelen"></Button>
+			</Box>
+		</BoxesList>
 
-  </BasePage>
+		<BoxesPerStatus :rawBoxes="rawBoxes" :state="1"></BoxesPerStatus>
+	</BasePage>
 </template>
 
-
 <script>
-	import { ref } from "vue";
-	import { db } from "@/functions/firebaseConfig.js";
+	import { ref, reactive, onMounted } from "vue";
 	import BasePage from "@/layouts/BasePage.vue";
 	import BoxesPerStatus from "@/components/charts/BoxesPerStatus.vue";
 	import Box from "@/components/base/Box.vue";
+	import BoxesList from "@/components/base/BoxesList.vue";
+	import Button from "@/components/base/Button.vue";
+
 	import { useStore } from "vuex";
+	import { useRouter } from "vue-router";
+	import { fetchAllBoxes } from "@/api/boxes.js";
 
 	export default {
 		components: {
 			BasePage,
 			BoxesPerStatus,
+			BoxesList,
 			Box,
+			Button,
 		},
 		setup() {
 			const store = useStore();
-			const rawBoxes = ref([]);
-			// const constructionParts = ref([]);
+			const router = useRouter();
+			const ui = reactive({
+				loading: true,
+				error: null,
+			});
 
-			function getAll() {
-				console.log(store.state.corsoGroup.id)
-				db.collection("boxes")
-					.where("belongsToCorsoGroup.id", "==", store.state.corsoGroup.id)
-					.onSnapshot(function(querySnapshot) {
-						rawBoxes.value = [];
-						querySnapshot.forEach(function(doc) {
-							rawBoxes.value.push({ id: doc.id, data: doc.data() });
-						});
+			// Get all boxes
+			const data = ref([]);
+			const getAll = async () => {
+				ui.loading = true;
+				try {
+					data.value = await fetchAllBoxes(10, 4).then((response) => {
+						return response;
 					});
+				} catch (err) {
+					ui.error = err;
+				} finally {
+					ui.loading = false;
+				}
+			};
 
-				// db.collection("constructionParts")
-				// 	.where("belongsToCorsoGroup.id", "==", store.state.corsoGroup.id)
-				// 	.where("isActive", "==", true)
-				// 	.get()
-				// 	.then((querySnapshot) => {
-				// 		constructionParts.value= [];
-				// 		querySnapshot.forEach((doc) => {
-				// 			constructionParts.value.push({ id: doc.id, data: doc.data() });
-				// 		});
-				// 	});
+			onMounted(getAll);
+
+			function onEdit(item) {
+				router.push({ name: "boxes-detail", params: { id: item.id } });
 			}
-			getAll()
+
 			return {
-				rawBoxes
-			}
-		}
+				ui,
+				data,
+				onEdit,
+				places: store.state.places,
+			};
+		},
 	};
 </script>

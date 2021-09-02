@@ -26,7 +26,7 @@
 			<div v-if="!ui.loading && !ui.addingFlowers">
 				<form class="form" @submit.prevent="handleSubmit(constructionPart)">
 					<FormInput label="Naam onderdeel" placeholder="Naam onderdeel" v-model:value="constructionPart.name" />
-					<FormInput label="Totale oppervlakte (m2)" placeholder="m2" v-model:value="constructionPart.totalSurface" />
+					<!-- <FormInput label="Totale oppervlakte (m2)" placeholder="m2" v-model:value="constructionPart.totalSurface" /> -->
 					<FormInput label="Totale berekende kratten (automatisch)" placeholder="" :value="constructionPart.calculatedTotalAmountBoxes" disabled />
 					<FormInput label="Totale berekende bloemen (automatisch)" placeholder="" :value="constructionPart.calculatedTotalAmountFlowers" disabled />
 					<BoxListViewItem
@@ -38,7 +38,17 @@
 							}
 						"
 					/>
-					<Button type="button" title="Verwijderen" look="error" v-if="routeId" :disabled="constructionPart.assignedBoxes.length > 0 || constructionPart.processedTotalAmountFlowers > 0" @click="handleDelete(constructionPart)"/>
+					<BoxListViewItem
+						title="Onvoorzien kratten"
+						:sub="`${constructionPart.correctionTotalAmountBoxes} krat (${constructionPart.correctionTotalAmountFlowers} bloemen)`"
+						:onEdit="
+							() => {
+								onCalculatedFlowerChange();
+							}
+						"
+					/>
+					<span v-if="deleteDisabled" style="text-align: center; margin-top: 10px; opacity: 0.6; font-size: 0.8em;">Verwijderen is niet mogelijk</span>
+					<Button type="button" title="Verwijderen" look="error" v-if="routeId" :disabled="deleteDisabled" @click="handleDelete(constructionPart)"/>
 					<Button type="submit" title="Opslaan" />
 				</form>
 			</div>
@@ -84,6 +94,8 @@
 				processedTotalAmountFlowers: 0,
 				calculatedTotalAmountBoxes: 0,
 				calculatedTotalAmountFlowers: 0,
+				correctionTotalAmountBoxes: 0,
+				correctionTotalAmountFlowers: 0,
 				calculatedFlowers: [],
 			});
 
@@ -213,6 +225,9 @@
 				onCalculatedFlowerChange,
 				onCalculatedFlowerComplete,
 				totalAmountToAdd,
+				deleteDisabled: computed(() => {
+					return constructionPart.value.assignedBoxes.length > 0 || constructionPart.value.processedTotalAmountFlowers > 0;
+				})
 			};
 		},
 	};

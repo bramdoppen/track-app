@@ -2,7 +2,7 @@
 	<div class="page">
 		<div class="login-box">
 			<header>
-				<h1>TandT</h1>
+				<h1>Dahlia <br> Beheer Systeem</h1>
 				<span v-if="!ui.registrationActive">Login met jouw gegevens</span>
 				<span v-if="ui.registrationActive">Registreer een nieuw account</span>
 			</header>
@@ -33,6 +33,9 @@
 				</Button>
 				<Button type="submit" title="Login"></Button>
 			</form>
+			<footer>
+				Powered by Lansink Bluiminck
+			</footer>
 		</div>
 	</div>
 </template>
@@ -88,13 +91,10 @@
 					} else {
 						response = await loginUser(user);
 					}
-					console.log(response);
 					store.dispatch("userLogin", response);
-					// store.dispatch("setCorsoGroup", response);
 					router.push("/");
           ui.value.loading = false;
 				} catch (err) {
-          console.log(err)
           ui.value.error = err;
           ui.value.loading = false;
 				}
@@ -116,6 +116,7 @@
 		width: 100%;
 		height: 100vh;
 		padding-top: 40px;
+		overflow: auto;
 	}
 
 	.login-box {
@@ -128,7 +129,7 @@
 		row-gap: 30px;
 		opacity: 0;
 		animation: showLogin 0.4s 0.2s cubic-bezier(0, 0.65, 0.16, 0.98) forwards;
-
+		height: 100%;
 		& > header {
 			text-align: center;
 		}
@@ -147,6 +148,7 @@
 		display: flex;
 		flex-direction: column;
 		row-gap: 16px;
+		flex: 1;
 	}
 
 	.f-row {
@@ -193,5 +195,10 @@
 		100% {
 			opacity: 1;
 		}
+	}
+	footer {
+		text-align: center;
+		opacity: 0.5;
+
 	}
 </style>

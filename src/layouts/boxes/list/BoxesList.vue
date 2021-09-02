@@ -51,7 +51,7 @@
 				loading: true,
 			});
 
-			// Get flowerTypes
+			// Get all boxes
 			const data = ref([]);
 			const getAll = async () => {
 				ui.loading = true;
@@ -62,6 +62,7 @@
 			};
 
 			onMounted(getAll);
+			
 			function onEdit(item) {
 				router.push({ name: "boxes-detail", params: { id: item.id } });
 			}

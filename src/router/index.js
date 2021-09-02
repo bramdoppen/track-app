@@ -129,9 +129,20 @@ const routes = [
 		component: () => import("../layouts/settings/SettingsOverview.vue"),
 	},
 	{
+		path: "/account",
+		name: "account",
+		meta: { requiresAuth: true },
+		component: () => import("../layouts/account/Account.vue"),
+	},
+	{
 		path: "/login",
 		name: "Login",
 		component: () => import("../layouts/login/Login.vue"),
+	},
+	{
+		path: "/activation-pending",
+		name: "activation-pending",
+		component: () => import("../layouts/account/Pending.vue"),
 	},
 ];
 
@@ -142,6 +153,7 @@ const router = createRouter({
 
 // Redirect to login page when not authenticated
 router.beforeEach((to, from, next) => {
+	let isActivated = store.state.user && store.state.user.isActivated;
 	let isLoggedIn = store.state.user !== null;
 
 	if (to.matched.some((record) => record.meta.requiresAuth)) {
@@ -151,6 +163,10 @@ router.beforeEach((to, from, next) => {
 			next({
 				path: "/login",
 				query: { redirect: to.fullPath },
+			});
+		} else if (isLoggedIn && !isActivated) {
+			next({
+				path: "/activation-pending",
 			});
 		} else {
 			next();
