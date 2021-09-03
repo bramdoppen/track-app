@@ -87,6 +87,16 @@ export default {
 		font-size: 24px;
 	}
 
+	.loading-panel {
+		height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+		& > div {
+			text-align: center;
+		}
+	}
+
 	#app {
 		height: 100vh; /* Fallback for browsers that do not support Custom Properties */
 		height: calc(var(--vh, 1vh) * 100);

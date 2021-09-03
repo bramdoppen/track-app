@@ -1,7 +1,6 @@
 <template>
 	<BasePage title="Onderdeel toevoegen">
-		<div>
-			<div v-if="ui.loading">Laden...</div>
+		<transition name="fade" mode="out-in" appear>
 			<div v-if="!ui.loading && ui.addingFlowers">
 				<h2>Berekende kratten</h2>
 				<form class="form" @submit.prevent="onCalculatedFlowerComplete()">
@@ -23,7 +22,7 @@
 					<Button type="submit" title="Opslaan" />
 				</form>
 			</div>
-			<div v-if="!ui.loading && !ui.addingFlowers">
+			<div v-else-if="!ui.loading && !ui.addingFlowers">
 				<form class="form" @submit.prevent="handleSubmit(constructionPart)">
 					<FormInput label="Naam onderdeel" placeholder="Naam onderdeel" v-model:value="constructionPart.name" />
 					<!-- <FormInput label="Totale oppervlakte (m2)" placeholder="m2" v-model:value="constructionPart.totalSurface" /> -->
@@ -48,11 +47,18 @@
 						"
 					/>
 					<span v-if="deleteDisabled" style="text-align: center; margin-top: 10px; opacity: 0.6; font-size: 0.8em;">Verwijderen is niet mogelijk</span>
-					<Button type="button" title="Verwijderen" look="error" v-if="routeId" :disabled="deleteDisabled" @click="handleDelete(constructionPart)"/>
+					<Button type="button" title="Verwijderen" look="error" v-if="routeId" :disabled="deleteDisabled" @click="handleDelete(constructionPart)" />
 					<Button type="submit" title="Opslaan" />
 				</form>
 			</div>
-		</div>
+			<div class="loading-panel error" v-else-if="ui.error && !ui.loading">
+				<div style="padding: 20px;">Er is een error opgetreden bij het laden.</div>
+				<Button @click="refresh()" look="green" title="Opnieuw laden" style="margin-top: 20px;"></Button>
+			</div>
+			<div class="loading-panel" v-else-if="ui.loading && !ui.error">
+				<div style="padding: 20px;">Laden...</div>
+			</div>
+		</transition>
 	</BasePage>
 </template>
 
@@ -81,6 +87,7 @@
 
 			const ui = reactive({
 				loading: false,
+				error: null,
 				flowersLoading: true,
 				addingFlowers: false,
 			});
@@ -104,7 +111,7 @@
 			// ------------------------
 
 			const buildCalculatedOnEdit = (response) => {
-				if(response) {
+				if (response) {
 					response.calculatedFlowers.forEach((calculated) => {
 						flowerBatch.value[calculated.id] = calculated.calculatedBoxes;
 					});
@@ -114,11 +121,16 @@
 			// Get data (if id specified in route)
 			const getSingleConstructionPart = async (id) => {
 				ui.loading = true;
-				constructionPart.value = await fetchSingle(id).then((response) => {
+				try {
+					constructionPart.value = await fetchSingle(id).then((response) => {
+						buildCalculatedOnEdit(response);
+						return response;
+					});
+				} catch (err) {
+					ui.error = err;
+				} finally {
 					ui.loading = false;
-					buildCalculatedOnEdit(response);
-					return response;
-				});
+				}
 			};
 
 			if (routeId) {
@@ -165,7 +177,7 @@
 			};
 
 			const handleDelete = (part) => {
-				if(routeId && window.confirm("Weet je zeker dat je dit onderdeel wil verwijderen?")) {
+				if (routeId && window.confirm("Weet je zeker dat je dit onderdeel wil verwijderen?")) {
 					deleteItem(routeId, part).then(() => {
 						router.go(-1);
 					});
@@ -219,6 +231,7 @@
 				constructionPart,
 				allFlowers,
 				flowerBatch,
+				refresh: getSingleConstructionPart,
 				getFlower,
 				handleSubmit,
 				handleDelete,
@@ -227,7 +240,7 @@
 				totalAmountToAdd,
 				deleteDisabled: computed(() => {
 					return constructionPart.value.assignedBoxes.length > 0 || constructionPart.value.processedTotalAmountFlowers > 0;
-				})
+				}),
 			};
 		},
 	};

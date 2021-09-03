@@ -51,6 +51,7 @@
 		background: white;
 		border-radius: 10px;
 		outline: 0;
+		appearance: none;
 		transition: border-color 0.2s ease;
 		
 		&[disabled] {

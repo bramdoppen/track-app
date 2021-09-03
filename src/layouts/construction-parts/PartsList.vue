@@ -1,7 +1,7 @@
 <template>
 	<BasePage title="Wagenonderdelen">
-		<div>
-			<BoxesList gap="8px">
+		<transition name="fade" mode="out-in" appear>
+			<BoxesList gap="8px" v-if="!ui.loading && !ui.error">
 				<transition-group name="trans-list">
 					<BoxListViewItem
 						v-for="item in data"
@@ -17,7 +17,14 @@
 				</transition-group>
 				<Button to="/parts/create" look="green" title="Wagenonderdeel toevoegen"></Button>
 			</BoxesList>
-		</div>
+			<div class="loading-panel error" v-else-if="ui.error && !ui.loading">
+				<div style="padding: 20px;">Er is een error opgetreden bij het laden.</div>
+				<Button @click="refresh()" look="green" title="Opnieuw laden" style="margin-top: 20px;"></Button>
+			</div>
+			<div class="loading-panel" v-else-if="ui.loading && !ui.error">
+				<div style="padding: 20px;">Laden...</div>
+			</div>
+		</transition>
 	</BasePage>
 </template>
 
@@ -27,7 +34,7 @@
 	import BoxesList from "@/components/base/BoxesList.vue";
 	import Button from "@/components/base/Button.vue";
 	import { useRouter } from "vue-router";
-	import { ref, onMounted } from "vue";
+	import { ref, onMounted, reactive } from "vue";
 	import { fetchAll } from "@/api/constructionParts.js";
 
 	export default {
@@ -40,10 +47,21 @@
 		setup() {
 			const router = useRouter();
 
+			const ui = reactive({
+				loading: true,
+				error: null,
+			});
 			// Get constructionParts
 			const data = ref([]);
 			const getAll = async () => {
-				data.value = await fetchAll();
+				ui.loading = true;
+				try {
+					data.value = await fetchAll();
+				} catch (err) {
+					ui.error = err;
+				} finally {
+					ui.loading = false;
+				}
 			};
 
 			onMounted(getAll);
@@ -54,13 +72,15 @@
 			function calculatePercentage(item) {
 				const calculated = item.data.calculatedTotalAmountFlowers;
 				const processed = item.data.processedTotalAmountFlowers;
-				return parseInt(processed/calculated * 100)
+				return parseInt((processed / calculated) * 100);
 			}
 
 			return {
+				ui,
 				data,
 				onEdit,
-				calculatePercentage
+				calculatePercentage,
+				refresh: getAll,
 			};
 		},
 	};

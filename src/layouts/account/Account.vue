@@ -71,8 +71,7 @@
 				corsoGroup: store.state.corsoGroup,
         version,
 				refresh: () => {
-          
-					console.log(" refr");
+          window.location.reload();
 				},
 				logout: () => {
 					if (window.confirm("Wilt u uitloggen?")) {

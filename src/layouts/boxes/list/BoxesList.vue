@@ -1,14 +1,11 @@
 <template>
 	<BasePage title="Alle Kratten">
-		<div>
-			<div class="loading" v-if="ui.loading">
-				Laden...
-			</div>
-			<BoxesList gap="8px" v-if="!ui.loading && data">
+		<transition name="fade" mode="out-in" appear>
+			<BoxesList gap="8px" v-if="!ui.loading && !ui.error">
 				<transition-group name="trans-list">
 					<BoxListViewItem
 						v-for="item in data"
-						:class="{'inactive': item.data.state > 4}"
+						:class="{ inactive: item.data.state > 4 }"
 						:key="item.id"
 						:title="`${item.data.flowerType.id} - ${item.data.flowerType.name}`"
 						:sub="`${item.id} | ${places[item.data.state]} | ${dayjs(new Date(item.data.createdOn.seconds * 1000)).fromNow()}`"
@@ -20,12 +17,21 @@
 					/>
 				</transition-group>
 			</BoxesList>
-		</div>
+			<div class="loading-panel error" v-else-if="ui.error && !ui.loading">
+				<div style="padding: 20px;">Er is een error opgetreden bij het laden.</div>
+				<Button @click="refresh()" look="green" title="Opnieuw laden" style="margin-top: 20px;"></Button>
+			</div>
+			<div class="loading-panel" v-else-if="ui.loading && !ui.error">
+				<div style="padding: 20px;">Laden...</div>
+			</div>
+		</transition>
 	</BasePage>
 </template>
 
 <script>
 	import BasePage from "@/layouts/BasePage.vue";
+	import Button from "@/components/base/Button.vue";
+
 	import BoxListViewItem from "@/components/base/BoxListViewItem.vue";
 	import BoxesList from "@/components/base/BoxesList.vue";
 	import dayjs from "dayjs";
@@ -41,6 +47,7 @@
 	export default {
 		components: {
 			BasePage,
+			Button,
 			BoxListViewItem,
 			BoxesList,
 		},
@@ -49,20 +56,24 @@
 			const router = useRouter();
 			const ui = reactive({
 				loading: true,
+				error: null,
 			});
 
 			// Get all boxes
 			const data = ref([]);
 			const getAll = async () => {
 				ui.loading = true;
-				data.value = await fetchAllBoxes().finally((response) => {
+				try {
+					data.value = await fetchAllBoxes();
+				} catch (err) {
+					ui.error = err;
+				} finally {
 					ui.loading = false;
-					return response;
-				});
+				}
 			};
 
 			onMounted(getAll);
-			
+
 			function onEdit(item) {
 				router.push({ name: "boxes-detail", params: { id: item.id } });
 			}
@@ -72,15 +83,15 @@
 				data,
 				dayjs,
 				onEdit,
-				places: store.state.places
+				places: store.state.places,
+				refresh: getAll,
 			};
 		},
 	};
 </script>
 
 <style>
-.inactive {
-	opacity: 0.5;
-}
-
+	.inactive {
+		opacity: 0.5;
+	}
 </style>
