@@ -3,7 +3,7 @@
 		<transition name="fade" mode="out-in" appear>
 			<div v-if="!ui.loading && ui.addingFlowers">
 				<h2>Berekende kratten</h2>
-				<form class="form" @submit.prevent="onCalculatedFlowerComplete()">
+				<form class="form" @submit.prevent="onCalculatedFlowerComplete()" style="margin-top: 20px">
 					<FormInput
 						v-for="(flower, flowerIdx) in allFlowers"
 						:key="flowerIdx"
@@ -25,7 +25,6 @@
 			<div v-else-if="!ui.loading && !ui.addingFlowers">
 				<form class="form" @submit.prevent="handleSubmit(constructionPart)">
 					<FormInput label="Naam onderdeel" placeholder="Naam onderdeel" v-model:value="constructionPart.name" />
-					<!-- <FormInput label="Totale oppervlakte (m2)" placeholder="m2" v-model:value="constructionPart.totalSurface" /> -->
 					<FormInput label="Totale berekende kratten (automatisch)" placeholder="" :value="constructionPart.calculatedTotalAmountBoxes" disabled />
 					<FormInput label="Totale berekende bloemen (automatisch)" placeholder="" :value="constructionPart.calculatedTotalAmountFlowers" disabled />
 					<BoxListViewItem

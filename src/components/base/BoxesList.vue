@@ -20,9 +20,10 @@
 		--gap: 20px;
 		display: flex;
 		flex-direction: column;
+		gap: var(--gap);
 
-		&:deep( > * + *){
+		/* &:deep( > * + *){
 			margin-top: var(--gap);
-		}
+		} */
 	}
 </style>

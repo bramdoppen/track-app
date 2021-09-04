@@ -18,6 +18,7 @@ export default createStore({
 		currActionName: null,
 		currConstructionGroup: null,
 		s: null,
+		sellReason: null,
 		currConstructionPart: {
 			name: null,
 			id: null,
@@ -55,9 +56,7 @@ export default createStore({
 			}
 		},
 		changeSellReason(state, payload) {
-			if (payload) {
-				state.sellReason = payload;
-			}
+			state.sellReason = payload;
 		},
 	},
 	actions: {

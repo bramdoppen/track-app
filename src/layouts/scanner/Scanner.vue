@@ -9,10 +9,11 @@
 			</section>
 			<ScanStatus :scanCount="scanCount" :scanError="scanError" :isProcessing="isProcessing"></ScanStatus>
 			<section class="frame-section">
-				<h4 class="qrscanner__title" v-show="$route.query.detail !== 'true' ">
+				<h4 class="qrscanner__title" v-show="$route.query.detail !== 'true'">
 					<span class="qrscanner__title--gray">Gekozen instelling:</span>
 					<span>{{ currActionName }}</span>
 					<span v-if="currConstructionPart.name">{{ currConstructionPart.name }}</span>
+					{{sellReason}}
 					<span v-if="currActionName === 'Verkocht' && sellReason">Reden verkoop: {{ sellReason }}</span>
 				</h4>
 				<Button class="button" @click="prevPage" title="Klaar"></Button>
@@ -72,7 +73,7 @@
 			onDecode(content) {
 				if (content.length === 20) {
 					this.kratId = content;
-					if(this.$route.query.detail == "true") {
+					if (this.$route.query.detail == "true") {
 						this.$router.push({ name: "boxes-detail", params: { id: this.kratId } });
 					} else {
 						this.isProcessing = true;
@@ -103,13 +104,13 @@
 				this.currAction = parseInt(this.currAction);
 
 				const updateConstParts = (boxId, boxData) => {
-					console.log(boxId, boxData, " boxdata")
+					console.log(boxId, boxData, " boxdata");
 					const emptyBox = {
 						id: boxId,
 						flowerType: boxData.flowerType,
-						amountInBox: boxData.amountInBox ? boxData.amountInBox : 0
+						amountInBox: boxData.amountInBox ? boxData.amountInBox : 0,
 					};
-					
+
 					if (this.currConstructionPart.id && this.currAction == 3) {
 						// Wanneer toegewezen aan wagenonderdeel -> plaats box in Assigned Boxes (en haal hem weg bij Processed, als hij daar al bestaat);
 						db.collection("constructionParts")
@@ -151,7 +152,7 @@
 					.then((doc) => {
 						if (doc.exists) {
 							const constructionPart = this.currConstructionPart.id ? { id: this.currConstructionPart.id, name: this.currConstructionPart.name } : null;
-							const customMessage = this.sellReason ? 'Verkocht. Reden verkoop: ' + this.sellReason : null;
+							const customMessage = this.sellReason ? "Verkocht. Reden verkoop: " + this.sellReason : null;
 							updateBoxState(this.kratId, doc.data().state, this.currAction, constructionPart, null, customMessage);
 							updateConstParts(doc.id, doc.data());
 							this.scanError = false;
@@ -168,7 +169,6 @@
 							this.scanError = true;
 							this.errorMessage = "Krat bestaat niet in database";
 						}
-
 					})
 					.catch((error) => {
 						(this.errorMessage = "Error:"), error;
@@ -201,6 +201,7 @@
 		beforeUnmount() {
 			store.commit("changeCurrentAction", null);
 			store.commit("changeConstructionPart", { id: null, name: null });
+			store.commit("changeSellReason", null);
 		},
 	};
 </script>

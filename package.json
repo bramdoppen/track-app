@@ -1,6 +1,6 @@
 {
   "name": "track-app",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --https",
@@ -10,11 +10,12 @@
   "dependencies": {
     "@j-t-mcc/vue3-chartjs": "^1.1.2",
     "@vueuse/core": "^6.0.0",
+    "@vueuse/firebase": "^6.1.0",
     "animejs": "^3.2.1",
     "chart.js": "^3.5.0",
     "core-js": "^3.6.5",
     "dayjs": "^1.10.6",
-    "firebase": "^8.6.8",
+    "firebase": "^8.10.0",
     "qrcode": "^1.4.4",
     "register-service-worker": "^1.7.1",
     "vue": "^3.0.0",

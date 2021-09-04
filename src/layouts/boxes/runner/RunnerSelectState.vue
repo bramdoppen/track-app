@@ -4,7 +4,7 @@
 			<Box v-if="place != 3">
 				<h3>Batch scan</h3>
 				<p>Kies een locatie om één of meerdere kratten in te checken.</p>
-				<BoxesList gap="8px">
+				<BoxesList gap="12px" style="margin-top: 20px;">
 					<Button v-for="(place, idx) in places" :key="idx" look="green" :title="place" @click="setPlace(idx)"></Button>
 				</BoxesList>
 			</Box>
@@ -12,7 +12,8 @@
 				<h3>Kies een wagenonderdeel</h3>
 				<p>Hang deze krat aan een specifiek wagenonderdeel</p>
 				<BoxesList gap="8px">
-					<Button v-for="(part, idx) in constructionParts" :key="idx" look="green" :title="part.name" @click="setConstructionPart(part)"></Button>
+					{{constructionParts}}
+					<Button v-for="(part, idx) in constructionParts" :key="idx" look="green" :title="part.data.name" @click="setConstructionPart(part.data)"></Button>
 				</BoxesList>
 			</Box>
 		</BoxesList>
@@ -62,10 +63,12 @@
 				store.commit("changeConstructionPart", place);
 				router.push("/boxes/scan");
 			}
+			const places = computed(() => store.state.places)
+			delete places.value[6];
 
 			return {
-				places: computed(() => store.state.places),
 				place: _place,
+				places,
         constructionParts,
 				setPlace,
 				setConstructionPart,

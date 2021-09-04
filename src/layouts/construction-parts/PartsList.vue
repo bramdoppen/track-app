@@ -1,12 +1,12 @@
 <template>
 	<BasePage title="Wagenonderdelen">
 		<transition name="fade" mode="out-in" appear>
-			<BoxesList gap="8px" v-if="!ui.loading && !ui.error">
+			<BoxesList gap="8px" v-if="allParts">
 				<transition-group name="trans-list">
 					<BoxListViewItem
-						v-for="item in data"
+						v-for="item in allParts"
 						:key="item.id"
-						:title="item.data.name"
+						:title="item.name"
 						:sub="`${calculatePercentage(item)}% afgerond`"
 						:onEdit="
 							() => {
@@ -17,11 +17,7 @@
 				</transition-group>
 				<Button to="/parts/create" look="green" title="Wagenonderdeel toevoegen"></Button>
 			</BoxesList>
-			<div class="loading-panel error" v-else-if="ui.error && !ui.loading">
-				<div style="padding: 20px;">Er is een error opgetreden bij het laden.</div>
-				<Button @click="refresh()" look="green" title="Opnieuw laden" style="margin-top: 20px;"></Button>
-			</div>
-			<div class="loading-panel" v-else-if="ui.loading && !ui.error">
+			<div class="loading-panel" v-else-if="!allParts">
 				<div style="padding: 20px;">Laden...</div>
 			</div>
 		</transition>
@@ -33,9 +29,12 @@
 	import BoxListViewItem from "@/components/base/BoxListViewItem.vue";
 	import BoxesList from "@/components/base/BoxesList.vue";
 	import Button from "@/components/base/Button.vue";
+	import usePercentageCompleted from "@/composables/usePercentageCompleted";
 	import { useRouter } from "vue-router";
-	import { ref, onMounted, reactive } from "vue";
-	import { fetchAll } from "@/api/constructionParts.js";
+
+	import { db } from "@/functions/firebaseConfig.js";
+
+	import { useFirestore } from "@vueuse/firebase/useFirestore.esm";
 
 	export default {
 		components: {
@@ -47,40 +46,22 @@
 		setup() {
 			const router = useRouter();
 
-			const ui = reactive({
-				loading: true,
-				error: null,
-			});
 			// Get constructionParts
-			const data = ref([]);
-			const getAll = async () => {
-				ui.loading = true;
-				try {
-					data.value = await fetchAll();
-				} catch (err) {
-					ui.error = err;
-				} finally {
-					ui.loading = false;
-				}
-			};
+			const allParts = useFirestore(db.collection("constructionParts"));
 
-			onMounted(getAll);
 			function onEdit(item) {
 				router.push({ name: "parts-edit", params: { id: item.id } });
 			}
 
 			function calculatePercentage(item) {
-				const calculated = item.data.calculatedTotalAmountFlowers;
-				const processed = item.data.processedTotalAmountFlowers;
-				return parseInt((processed / calculated) * 100);
+				const { calculatedPercentage } = usePercentageCompleted(item);
+				return calculatedPercentage.value;
 			}
 
 			return {
-				ui,
-				data,
+				allParts,
 				onEdit,
 				calculatePercentage,
-				refresh: getAll,
 			};
 		},
 	};
