@@ -13,7 +13,7 @@
 				<p>Hang deze krat aan een specifiek wagenonderdeel</p>
 				<BoxesList gap="8px">
 					{{constructionParts}}
-					<Button v-for="(part, idx) in constructionParts" :key="idx" look="green" :title="part.data.name" @click="setConstructionPart(part.data)"></Button>
+					<Button v-for="(part, idx) in constructionParts" :key="idx" look="green" :title="part.data.name" @click="setConstructionPart(part.id, part.data.name)"></Button>
 				</BoxesList>
 			</Box>
 		</BoxesList>
@@ -59,8 +59,8 @@
 				}
 			}
 
-			function setConstructionPart(place) {
-				store.commit("changeConstructionPart", place);
+			function setConstructionPart(id, name) {
+				store.commit("changeConstructionPart", { id: id, name: name });
 				router.push("/boxes/scan");
 			}
 			const places = computed(() => store.state.places)
