@@ -33,6 +33,7 @@ const updateItem = (id, item) => {
 	const currDate = new Date();
 	return db.collection("constructionParts").doc(id).update({
     name: item.name,
+    description: item.description,
     totalSurface: item.totalSurface,
 		calculatedTotalAmountBoxes: item.calculatedTotalAmountBoxes,
 		calculatedTotalAmountFlowers: item.calculatedTotalAmountFlowers,
@@ -51,6 +52,7 @@ const createItem = function(item) {
 	const currGroup = store.state.corsoGroup || store.state.user.corsoGroup;
 	return db.collection("constructionParts").add({
     name: item.name,
+    description: item.description,
     totalSurface: item.totalSurface,
     assignedBoxes: [],
     processedBoxes: [],

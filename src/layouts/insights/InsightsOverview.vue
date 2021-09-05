@@ -1,11 +1,11 @@
 <template>
 	<BasePage title="Inzicht">
 		<transition name="fade" mode="out-in" appear>
-			<div v-if="!ui.loading && !ui.error">
+			<div v-if="allBoxes && allParts">
 				<BoxesList gap="20px">
 					<BoxesList>
 						<div class="box-holder">
-							<BoxListViewItem :title="`${allBoxes.length}  &#128230;`" sub="verwerkt" />
+							<BoxListViewItem :title="`${totalProcessedBoxes.length}  &#128230;`" sub="verwerkt" />
 							<BoxListViewItem :title="`${totalCalculated.percentage}%`" sub="afgerond" />
 							<BoxListViewItem :title="`${totalCalculated.correctionBoxes} &#128230;`" sub="tekort" />
 						</div>
@@ -27,11 +27,7 @@
 					</BoxesList>
 				</BoxesList>
 			</div>
-			<div class="loading-panel error" v-else-if="ui.error && !ui.loading">
-				<div style="padding: 20px;">Er is een error opgetreden bij het laden.</div>
-				<Button @click="refresh()" look="green" title="Opnieuw laden" style="margin-top: 20px;"></Button>
-			</div>
-			<div class="loading-panel" v-else-if="ui.loading && !ui.error">
+			<div class="loading-panel" v-else>
 				<div style="padding: 20px;">Laden...</div>
 			</div>
 		</transition>
@@ -39,17 +35,14 @@
 </template>
 
 <script>
-	import { ref, reactive, onMounted, computed } from "vue";
+	import { computed } from "vue";
 	import BasePage from "@/layouts/BasePage.vue";
 	import BoxListViewItem from "@/components/base/BoxListViewItem.vue";
 
 	import BoxesList from "@/components/base/BoxesList.vue";
-	import Button from "@/components/base/Button.vue";
 
 	import { useStore } from "vuex";
 	import { useRouter } from "vue-router";
-	import { fetchAllBoxes } from "@/api/boxes.js";
-	// import { fetchAll } from "@/api/constructionParts.js";
 	import usePercentageCompleted from "@/composables/usePercentageCompleted";
 	import useCalculateTotalPercentage from "@/composables/useCalculateTotalPercentage";
 	import { db } from "@/functions/firebaseConfig.js";
@@ -61,47 +54,31 @@
 			BasePage,
 			BoxListViewItem,
 			BoxesList,
-			Button,
 		},
 		setup() {
 			const store = useStore();
 			const router = useRouter();
-			const ui = reactive({
-				loading: true,
-				error: null,
-			});
 
-			// Get all boxes
-			const allBoxes = ref([]);
-			// const allParts = ref([]);
-			const getAll = async () => {
-				ui.loading = true;
-				try {
-					allBoxes.value = await fetchAllBoxes().then((response) => {
-						return response;
-					});
-					// allParts.value = await fetchAll().then((response) => {
-					// 	return response;
-					// });
-				} catch (err) {
-					ui.error = err;
-				} finally {
-					ui.loading = false;
-				}
-			};
-
+			const allBoxes = useFirestore(db.collection("boxes"));
 			const allParts = useFirestore(db.collection("constructionParts"));
 
-			onMounted(getAll);
-
 			function onEdit(item) {
-				router.push({ name: "boxes-detail", params: { id: item.id } });
+				router.push({ name: "parts-detail", params: { id: item.id } });
 			}
 
 			function calculatePercentage(item) {
 				const { calculatedPercentage } = usePercentageCompleted(item);
 				return calculatedPercentage.value;
 			}
+
+			const totalProcessedBoxes = computed(() => {
+				if (!allBoxes.value) {
+					return;
+				}
+				return allBoxes.value.filter(box => {
+					return box.state === 4;
+				})
+			})
 
 			const totalCalculated = computed(() => {
 				if (!allParts.value) {
@@ -115,12 +92,12 @@
 			});
 
 			return {
-				ui,
 				allBoxes,
 				allParts,
 				onEdit,
 				calculatePercentage,
 				totalCalculated,
+				totalProcessedBoxes,
 				places: store.state.places,
 			};
 		},
@@ -130,7 +107,7 @@
 <style scoped>
 	.box-holder {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 		gap: 8px;
 
 		& :deep(.box-item) {

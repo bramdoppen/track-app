@@ -2,7 +2,10 @@
 	<div class="page">
 		<div class="login-box">
 			<header>
-				<h1>Dahlia <br> Beheer Systeem</h1>
+				<h1>
+					Dahlia <br />
+					Beheer Systeem
+				</h1>
 				<span v-if="!ui.registrationActive">Login met jouw gegevens</span>
 				<span v-if="ui.registrationActive">Registreer een nieuw account</span>
 			</header>
@@ -22,7 +25,7 @@
 				<div class="f-row" v-if="ui.registrationActive">
 					<label for="input-three" class="f-label">Corsogroep:</label>
 					<select id="input-three" class="f-input" v-model="user.corsoGroup" required>
-						<option>Selecteer groep</option>
+						<option disabled>Selecteer groep</option>
 						<option v-for="group in corsoGroups" :key="group.id" v-bind:value="group">{{ group.name }}</option>
 					</select>
 				</div>
@@ -62,7 +65,7 @@
 				displayName: null,
 				email: null,
 				password: null,
-        corsoGroup: null,
+				corsoGroup: null,
 			});
 
 			// Build ui vars
@@ -82,9 +85,9 @@
 
 			// Handle submit form
 			const handleSubmit = async (user) => {
-        ui.value.error = null;
-        ui.value.loading = true;
-        try {
+				ui.value.error = null;
+				ui.value.loading = true;
+				try {
 					let response = null;
 					if (ui.value.registrationActive) {
 						response = await registerUser(user);
@@ -93,10 +96,10 @@
 					}
 					store.dispatch("userLogin", response);
 					router.push("/");
-          ui.value.loading = false;
+					ui.value.loading = false;
 				} catch (err) {
-          ui.value.error = err;
-          ui.value.loading = false;
+					ui.value.error = err;
+					ui.value.loading = false;
 				}
 			};
 
@@ -135,14 +138,14 @@
 		}
 	}
 
-  header {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    & > span {
-      opacity: 0.75;
-    }
-  }
+	header {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		& > span {
+			opacity: 0.75;
+		}
+	}
 
 	.form {
 		display: flex;
@@ -160,8 +163,8 @@
 
 	h1 {
 		margin: 0;
-    font-weight: 700;
-    color: var(--color-primary);
+		font-weight: 700;
+		color: var(--color-primary);
 	}
 
 	label {
@@ -170,22 +173,31 @@
 		font-family: var(--font-title);
 	}
 
-	input, select {
+	input,
+	select {
 		font-family: var(--font-title);
 		padding: 19px 25px;
 		font-size: 16px;
 		border: 2px solid #eaeaea;
-		background: white;
+		background-color: white;
 		border-radius: 10px;
 		outline: 0;
 		transition: border-color 0.2s ease;
+		appearance: none;
 	}
-	input:focus, select:focus {
+	select {
+		background-size: 20px;
+		background-position: right 10px center;
+		background-repeat: no-repeat;
+		background-image: url("data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjE3OTIiIHZpZXdCb3g9IjAgMCAxNzkyIDE3OTIiIHdpZHRoPSIxNzkyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xNDA4IDcwNHEwIDI2LTE5IDQ1bC00NDggNDQ4cS0xOSAxOS00NSAxOXQtNDUtMTlsLTQ0OC00NDhxLTE5LTE5LTE5LTQ1dDE5LTQ1IDQ1LTE5aDg5NnEyNiAwIDQ1IDE5dDE5IDQ1eiIvPjwvc3ZnPg==");
+	}
+	input:focus,
+	select:focus {
 		border-color: var(--color-secondary);
 	}
 	.errors {
 		color: var(--color-error);
-    line-height: 1.4;
+		line-height: 1.4;
 	}
 
 	@keyframes showLogin {
@@ -199,6 +211,5 @@
 	footer {
 		text-align: center;
 		opacity: 0.5;
-
 	}
 </style>

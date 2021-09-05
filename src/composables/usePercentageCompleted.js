@@ -4,9 +4,10 @@ export default function usePercentageCompleted(_item) {
   const item = ref(_item);
 
   const calculatedPercentage = computed(() => {
-    const calculated = item.value.calculatedTotalAmountFlowers || 0;
-    const processed = item.value.processedTotalAmountFlowers || 0;
-    return parseInt((processed / calculated) * 100);
+    const calculatedFlowers = item.value.calculatedTotalAmountFlowers || 0;
+    const processedFlowers = item.value.processedTotalAmountFlowers || 0;
+    const correctionFlowers = item.value.correctionTotalAmountFlowers || 0;
+    return parseInt((processedFlowers / (calculatedFlowers + correctionFlowers)) * 100);
   });
 
   return {

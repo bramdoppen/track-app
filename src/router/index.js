@@ -85,6 +85,32 @@ const routes = [
 		],
 	},
 	{
+		path: "/deliveries",
+		name: "deliveries",
+		component: RouteRenderer,
+		meta: { requiresAuth: true },
+		children: [
+			{
+				path: "create",
+				name: "deliveries-create",
+				meta: { requiresAuth: true },
+				component: () => import("../layouts/deliveries/create/CreateDelivery.vue"),
+			},
+			{
+				path: "edit/:id",
+				name: "deliveries-edit",
+				meta: { requiresAuth: true },
+				component: () => import("../layouts/deliveries/create/CreateDelivery.vue"),
+			},
+			{
+				path: "list",
+				name: "deliveries-list",
+				meta: { requiresAuth: true },
+				component: () => import("../layouts/deliveries/list/DeliveriesList.vue"),
+			},
+		],
+	},
+	{
 		path: "/parts",
 		name: "construction-parts",
 		component: RouteRenderer,

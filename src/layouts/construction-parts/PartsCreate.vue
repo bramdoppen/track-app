@@ -25,8 +25,14 @@
 			<div v-else-if="!ui.loading && !ui.addingFlowers">
 				<form class="form" @submit.prevent="handleSubmit(constructionPart)">
 					<FormInput label="Naam onderdeel" placeholder="Naam onderdeel" v-model:value="constructionPart.name" />
+					<FormInput label="Omschrijving" placeholder="Omschrijving" v-model:value="constructionPart.description" />
 					<FormInput label="Totale berekende kratten (automatisch)" placeholder="" :value="constructionPart.calculatedTotalAmountBoxes" disabled />
 					<FormInput label="Totale berekende bloemen (automatisch)" placeholder="" :value="constructionPart.calculatedTotalAmountFlowers" disabled />
+					<!-- <label for="input-three" class="f-label">Magische link (aan ander onderdeel):</label>
+					<select id="input-three" class="f-input" v-model="user.corsoGroup" required>
+						<option disabled>Selecteer onderdeel</option>
+						<option v-for="group in corsoGroups" :key="group.id" v-bind:value="group">{{ group.name }}</option>
+					</select> -->
 					<BoxListViewItem
 						title="Berekende kratten"
 						:sub="`${constructionPart.calculatedTotalAmountBoxes} krat (${constructionPart.calculatedTotalAmountFlowers} bloemen)`"
@@ -94,6 +100,7 @@
 			// Get constructionparts
 			const constructionPart = ref({
 				name: null,
+				description: null,
 				totalSurface: null,
 				assignedBoxes: [],
 				processedBoxes: [],

@@ -53,9 +53,8 @@
 			const { width } = useWindowSize();
       const store = useStore();
       const randomQuotes = [
-        // "wat zit jouw haar leuk!",
-        // "zoals jij kratten scant, zo scant geen ander ze!",
-        // "goed dat je er weer bent!",
+        "wat zit jouw haar leuk!",
+        "zoals jij kratten scant, zo scant geen ander ze!",
         "glad to have you back.",
       ];
 

@@ -28,8 +28,9 @@ const registerUser = (user) => {
 		.createUserWithEmailAndPassword(user.email, user.password)
 		.then((userResponse) => {
 			user.uid = userResponse.user.uid;
+			userResponse.user.corsoGroup = user.corsoGroup;
 			addNewUserToDb(user);
-			return userResponse;
+			return userResponse.user;
 		});
 };
 

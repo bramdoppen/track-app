@@ -3,10 +3,10 @@
 		<div>
 			<div v-if="isLoading">Laden...</div>
 			<form class="form" @submit.prevent="handleSubmit(flowerId, flower)" v-if="!isLoading">
-				<FormInput label="Bloem ID" placeholder="1100" v-model:value="flowerId" />
-				<FormInput label="Naam bloem" placeholder="White Aster" v-model:value="flower.name" />
+				<FormInput label="Bloem ID" placeholder="1100" v-model:value="flowerId" :disabled="routeId" />
+				<FormInput label="Naam bloem" placeholder="White Aster" v-model:value="flower.name" :disabled="routeId" />
 				<FormInput label="Aantal per krat" placeholder="400" v-model:value="flower.boxAmount" :disabled="routeId" />
-				<FormInput label="Kleurcode" placeholder="#fff" v-model:value="flower.colorHex" />
+				<FormInput label="Kleurcode" placeholder="#fff" v-model:value="flower.colorHex" :disabled="routeId" />
 				<Button type="submit" title="Opslaan" />
 			</form>
 		</div>

@@ -2,7 +2,7 @@
 	<div class="box-item">
 		<strong class="box-title">{{ title }}</strong>
 		<span class="box-sub">{{ sub }}</span>
-		<Button class="box-button-edit" look="xsmall" title="Bewerk" v-if="onEdit" @click="handleEdit()" />
+		<Button class="box-button-edit" look="xsmall" :title="onEditText ? onEditText : 'Bewerk'" v-if="onEdit" @click="handleEdit()" />
 	</div>
 </template>
 
@@ -20,6 +20,10 @@
 				required: true,
 			},
 			sub: {
+				type: String,
+				required: false,
+			},
+			onEditText: {
 				type: String,
 				required: false,
 			},

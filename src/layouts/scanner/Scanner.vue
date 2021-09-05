@@ -13,7 +13,7 @@
 					<span class="qrscanner__title--gray">Gekozen instelling:</span>
 					<span>{{ currActionName }}</span>
 					<span v-if="currConstructionPart.name">{{ currConstructionPart.name }}</span>
-					{{sellReason}}
+					{{ sellReason }}
 					<span v-if="currActionName === 'Verkocht' && sellReason">Reden verkoop: {{ sellReason }}</span>
 				</h4>
 				<Button class="button" @click="prevPage" title="Klaar"></Button>
@@ -100,18 +100,126 @@
 						}
 					});
 			},
-			makeDocReq(input) {
-				this.currAction = parseInt(this.currAction);
+			handleChangeBoxData(doc, toState, constructionPart) {
+				const fromState = doc.data().state;
+				const boxData = doc.data();
+				const customMessage = this.sellReason ? "Verkocht. Reden verkoop: " + this.sellReason : null;
+				const emptyBox = {
+					id: doc.id,
+					flowerType: boxData.flowerType,
+					amountInBox: boxData.amountInBox ? boxData.amountInBox : 0,
+				};
 
-				const updateConstParts = (boxId, boxData) => {
-					console.log(boxId, boxData, " boxdata");
-					const emptyBox = {
-						id: boxId,
-						flowerType: boxData.flowerType,
-						amountInBox: boxData.amountInBox ? boxData.amountInBox : 0,
-					};
+				if (fromState === 3) {
+					if (toState === 3) {
+						// ----------------------
+						// Box from part to part
+						// ----------------------
+						// prompt
+						const leftInBox = window.prompt("Hoeveel bloemen zitten er nog in de krat?");
+						const amountFlowersUsed = parseInt(emptyBox.amountInBox - leftInBox);
+						const msg = `Krat naar ander wagenonderdeel: ${this.currConstructionPart.name} (komt van: ${boxData.belongsToConstructionPart.name}). ${amountFlowersUsed} bloemen gebruikt op ${boxData.belongsToConstructionPart.name}. Krat bevat nog ${leftInBox} bloemen.`;
+						// Weghalen bij huidig onderdeel
+						db.collection("constructionParts")
+							.doc(boxData.belongsToConstructionPart.id)
+							.update({
+								assignedBoxes: fb.firestore.FieldValue.arrayRemove(emptyBox),
+							});
 
-					if (this.currConstructionPart.id && this.currAction == 3) {
+						emptyBox.amountInBox = leftInBox;
+						emptyBox.usedFromBox = amountFlowersUsed;
+						db.collection("constructionParts")
+							.doc(boxData.belongsToConstructionPart.id)
+							.update({
+								processedBoxes: fb.firestore.FieldValue.arrayUnion(emptyBox),
+								processedTotalAmountFlowers: fb.firestore.FieldValue.increment(amountFlowersUsed),
+							});
+
+						delete emptyBox.usedFromBox;
+						// Zetten op nieuw onderdeel
+						db.collection("constructionParts")
+							.doc(this.currConstructionPart.id)
+							.update({
+								assignedBoxes: fb.firestore.FieldValue.arrayUnion(emptyBox),
+								processedBoxes: fb.firestore.FieldValue.arrayRemove(emptyBox),
+							});
+
+						// Krat zelf updaten
+						updateBoxState(this.kratId, fromState, toState, constructionPart, leftInBox, msg);
+					} else if (toState < 4) {
+						// ----------------------
+						// Box from part to storage
+						// ----------------------
+						const leftInBox = window.prompt("Hoeveel bloemen zitten er nog in de krat?");
+						const amountFlowersUsed = parseInt(emptyBox.amountInBox - leftInBox);
+						const msg = `Krat terug naar opslag: ${toState} (komt van: ${boxData.belongsToConstructionPart.name}). ${amountFlowersUsed} bloemen gebruikt op ${boxData.belongsToConstructionPart.name}. Krat bevat nog ${leftInBox} bloemen.`;
+
+						// Weghalen bij huidig onderdeel
+						db.collection("constructionParts")
+							.doc(boxData.belongsToConstructionPart.id)
+							.update({
+								assignedBoxes: fb.firestore.FieldValue.arrayRemove(emptyBox),
+							});
+
+						emptyBox.amountInBox = leftInBox;
+						emptyBox.usedFromBox = amountFlowersUsed;
+						db.collection("constructionParts")
+							.doc(boxData.belongsToConstructionPart.id)
+							.update({
+								processedBoxes: fb.firestore.FieldValue.arrayUnion(emptyBox),
+								processedTotalAmountFlowers: fb.firestore.FieldValue.increment(amountFlowersUsed),
+							});
+
+						updateBoxState(this.kratId, fromState, toState, null, leftInBox, msg);
+					} else if (toState === 5) {
+						// box is sold (weird, but can happen)
+						const leftInBox = window.prompt("Hoeveel bloemen zitten er nog in de krat?");
+						const amountFlowersUsed = parseInt(emptyBox.amountInBox - leftInBox);
+						const msg = `Krat naar ander wagenonderdeel: ${this.currConstructionPart.name} (komt van: ${boxData.belongsToConstructionPart.name}). ${amountFlowersUsed} bloemen gebruikt op ${boxData.belongsToConstructionPart.name}. Krat bevat nog ${leftInBox} bloemen.`;
+						// Weghalen bij huidig onderdeel
+						db.collection("constructionParts")
+							.doc(boxData.belongsToConstructionPart.id)
+							.update({
+								assignedBoxes: fb.firestore.FieldValue.arrayRemove(emptyBox),
+							});
+
+						emptyBox.amountInBox = leftInBox;
+						emptyBox.usedFromBox = amountFlowersUsed;
+						db.collection("constructionParts")
+							.doc(boxData.belongsToConstructionPart.id)
+							.update({
+								processedBoxes: fb.firestore.FieldValue.arrayUnion(emptyBox),
+								processedTotalAmountFlowers: fb.firestore.FieldValue.increment(amountFlowersUsed),
+							});
+
+						updateBoxState(this.kratId, fromState, toState, null, leftInBox, msg);
+						//prompt
+					} else {
+						// Box from part to completed
+						// Wanneer afgerond op wagenonderdeel -> plaats box in Processed boxes (en haal hem weg bij Assigned);
+						db.collection("constructionParts")
+							.doc(boxData.belongsToConstructionPart.id)
+							.update({
+								assignedBoxes: fb.firestore.FieldValue.arrayRemove(emptyBox),
+								processedTotalAmountFlowers: fb.firestore.FieldValue.increment(emptyBox.amountInBox),
+							});
+
+						emptyBox.usedFromBox = emptyBox.amountInBox;
+						emptyBox.amountInBox = 0;
+
+						db.collection("constructionParts")
+							.doc(boxData.belongsToConstructionPart.id)
+							.update({
+								processedBoxes: fb.firestore.FieldValue.arrayUnion(emptyBox),
+							});
+
+						updateBoxState(this.kratId, fromState, toState, null, 0, null);
+					}
+				} else {
+					// Box gets scanned regular
+					updateBoxState(this.kratId, fromState, toState, constructionPart, null, customMessage);
+
+					if (this.currConstructionPart.id && toState === 3) {
 						// Wanneer toegewezen aan wagenonderdeel -> plaats box in Assigned Boxes (en haal hem weg bij Processed, als hij daar al bestaat);
 						db.collection("constructionParts")
 							.doc(this.currConstructionPart.id)
@@ -119,31 +227,11 @@
 								assignedBoxes: fb.firestore.FieldValue.arrayUnion(emptyBox),
 								processedBoxes: fb.firestore.FieldValue.arrayRemove(emptyBox),
 							});
-					} else if (this.currAction == 4 && boxData.belongsToConstructionPart !== null) {
-						// Wanneer afgerond op wagenonderdeel -> plaats box in Processed boxes (en haal hem weg bij Assigned);
-						db.collection("constructionParts")
-							.doc(boxData.belongsToConstructionPart.id)
-							.update({
-								assignedBoxes: fb.firestore.FieldValue.arrayRemove(emptyBox),
-							});
-
-						emptyBox.amountInBox = 0;
-						db.collection("constructionParts")
-							.doc(boxData.belongsToConstructionPart.id)
-							.update({
-								processedBoxes: fb.firestore.FieldValue.arrayUnion(emptyBox),
-								processedTotalAmountFlowers: fb.firestore.FieldValue.increment(emptyBox.amountInBox),
-							});
-
-						// Box is empty. Set boxamount to zero
-						db.collection("boxes")
-							.doc(boxId)
-							.update({
-								amountInBox: emptyBox.amountInBox,
-							});
 					}
-					// Optie voor ' partially completed on this constructionpart ';
-				};
+				}
+			},
+			makeDocReq(input) {
+				this.currAction = parseInt(this.currAction);
 
 				return db
 					.collection("boxes")
@@ -152,9 +240,7 @@
 					.then((doc) => {
 						if (doc.exists) {
 							const constructionPart = this.currConstructionPart.id ? { id: this.currConstructionPart.id, name: this.currConstructionPart.name } : null;
-							const customMessage = this.sellReason ? "Verkocht. Reden verkoop: " + this.sellReason : null;
-							updateBoxState(this.kratId, doc.data().state, this.currAction, constructionPart, null, customMessage);
-							updateConstParts(doc.id, doc.data());
+							this.handleChangeBoxData(doc, this.currAction, constructionPart);
 							this.scanError = false;
 							this.errorMessage = null;
 							this.scanCount++;

@@ -67,7 +67,6 @@ const createBox = function(flower) {
 const updateBoxState = function(kratId, prevState, newState, constructionPart, amountLeftInBox, customMessage) {
 	const currDate = new Date();
 	const currUser = store.state.user;
-	console.log(kratId, prevState, newState, constructionPart, amountLeftInBox)
 
 	// Get updated message
 	const getUpdatedMessage = () => {
@@ -121,7 +120,7 @@ const updateBoxState = function(kratId, prevState, newState, constructionPart, a
 	}
 
 	// Only set amountleftinbox when specified
-	if(amountLeftInBox) {
+	if(amountLeftInBox !== null) {
 		updatedFields.amountInBox = amountLeftInBox
 	}
 

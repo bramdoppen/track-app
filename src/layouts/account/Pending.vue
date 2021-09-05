@@ -8,9 +8,9 @@
 				</h1>
 				<span>Je bent er bijna!</span>
 			</header>
-			<section>
-				<span>Je account is nog niet geactiveerd.</span><br />
-				<strong>Loop even naar Bram toe, of <a :href="`https://wa.me/31640521978?text=${encodeURI(formattedMessage)}`">stuur even een appje</a>.</strong>
+			<section v-if="user">
+				<span>Je account <strong>{{ user.email }}</strong> is nog niet geactiveerd. <br>Loop even naar Bram toe. Die activeert jouw account.</span><br /><br>
+				<strong v-if="storedUser && storedUser.corsoGroup"> <a :href="`https://wa.me/31640521978?text=${encodeURI(formattedMessage)}`">Stuur Bram een appje</a>. </strong><br><br>
 				<iframe src="https://giphy.com/embed/QPQ3xlJhqR1BXl89RG" width="480" height="400" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
 			</section>
 			<Button to="/login" style="margin-top: 10px;" title="Terug naar inloggen"> </Button>
@@ -22,11 +22,12 @@
 </template>
 
 <script>
-	import { computed } from "vue";
+	import { computed, watchEffect, watch } from "vue";
 	import { useStore } from "vuex";
 	import { useRouter } from "vue-router";
-  import { getUserFromDb } from "@/api/user";
-
+	import { getUserFromDb } from "@/api/user";
+	import { useAuth } from "@vueuse/firebase/useAuth.esm";
+	import { fb } from "@/functions/firebaseConfig.js";
 	import Button from "@/components/base/Button";
 
 	export default {
@@ -36,17 +37,28 @@
 		setup() {
 			const router = useRouter();
 			const store = useStore();
-			const user = store.state.user;
+			const { user } = useAuth(fb.auth);
+			const storedUser = computed(() => store.state.user);
 
-      getUserFromDb(user.uid).then((userResponse) => {
-        if(userResponse.data().isActivated) {
-          store.dispatch("userSetActivation");
-          router.push("/");
-        }
-      });
+			watchEffect(() => {
+				if (user.value) {
+					getUserFromDb(user.value.uid).then((userResponse) => {
+						store.dispatch("userLogin", userResponse.data());
+					});
+				}
+			});
+
+			watch(
+				() => storedUser.value.isActivated,
+				() => {
+					router.push("/");
+				},
+			);
 
 			return {
-				formattedMessage: computed(() => `Hi Bram, ${user.displayName} hier. Ik heb mij aangemeld met ${user.email} vanuit ${user.corsoGroup.name} en wil graag toegang tot het DMS.`),
+				user,
+				storedUser,
+				formattedMessage: computed(() => `Hi Bram, Ik heb mij aangemeld met ${user.value.email} vanuit ${storedUser.value.corsoGroup.name} en wil graag toegang tot het DMS.`),
 			};
 		},
 	};
@@ -58,7 +70,7 @@
 		width: 100%;
 		height: 100vh;
 		padding-top: 40px;
-    overflow: auto;
+		overflow: auto;
 	}
 
 	.login-box {
@@ -143,11 +155,13 @@
 	footer {
 		text-align: center;
 		opacity: 0.5;
+    padding-bottom: 50px;
 	}
 	section {
 		text-align: center;
 	}
 	iframe {
 		width: 100%;
+    max-height: 130px;
 	}
 </style>
