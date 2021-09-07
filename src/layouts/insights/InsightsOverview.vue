@@ -27,6 +27,16 @@
 							</div>
 						</BoxListViewItem>
 					</BoxesList>
+					<BoxesList gap="8px" style="border-top:0;" v-if="filteredParts.completed.length > 0">
+						<h3 style="margin-bottom: 10px;">Afgeronde onderdelen</h3>
+						<BoxListViewItem v-for="item in filteredParts.completed" :key="item.id" :title="item.name" onEditText="Bekijk" :onEdit="() => onEdit(item)">
+							<div class="subitem">
+								<Label state="warning" class="label" v-if="calculatePercentage(item) > 95">Check voor afronding</Label>
+								<span>{{ calculatePercentage(item) }}% afgerond</span>
+								<span v-if="item.correctionTotalAmountBoxes">{{ item.correctionTotalAmountBoxes }} tekort</span>
+							</div>
+						</BoxListViewItem>
+					</BoxesList>
 
 					<BoxesList gap="8px">
 						<h2>Kratten / Leveringen</h2>
@@ -221,9 +231,12 @@
 		border-top: 1px solid #ddd;
 		padding-top: 20px;
 	}
-	h2 {
+	h2, h3 {
 		font-size: 18px;
 		text-align: center;
+	}
+	h3 {
+		font-size: 16px;
 	}
 	.light-message {
 		text-align: center;

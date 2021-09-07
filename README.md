@@ -9,7 +9,7 @@
 
 ## About
 
-This app is created with Vue.js 3 and uses Firebase Cloud Database as main database. It's not really intended to be used by anyone, because it serves a very specific need.
+This app is created with Vue.js 3 and uses Firebase (Firestore) Cloud Database as main database. It's not really intended to be used by everyone, because it serves a very specific need.
 
 ## Project setup
 

@@ -49,6 +49,35 @@ const updateItem = (id, item) => {
   });
 };
 
+const updateMagicLink = (id, item) => {
+  const currUser = store.state.user;
+	const currDate = new Date();
+	const correctionFlowersAsIndication = item.correctionFlowers.map(corr => {return {indication: true, ...corr}});
+	return db.collection("constructionParts").doc(id).set({
+    correctionFlowers: correctionFlowersAsIndication,
+		correctionTotalAmountBoxes: item.correctionTotalAmountBoxes,
+		correctionTotalAmountFlowers: item.correctionTotalAmountFlowers,
+    updatedOn: currDate,
+    updatedBy: {
+      id: currUser.uid,
+      name: currUser.displayName,
+    },
+  }, {merge: true});
+};
+
+const completePart = (id) => {
+  const currUser = store.state.user;
+	const currDate = new Date();
+	return db.collection("constructionParts").doc(id).update({
+    isCompleted: true,
+    updatedOn: currDate,
+    updatedBy: {
+      id: currUser.uid,
+      name: currUser.displayName,
+    },
+  });
+};
+
 const createItem = function(item) {
 	const currUser = store.state.user;
 	const currDate = new Date();
@@ -60,6 +89,7 @@ const createItem = function(item) {
     assignedBoxes: [],
     processedBoxes: [],
 		processedTotalAmountFlowers: 0,
+		magicLink: item.magicLink,
 		calculatedFlowers: item.calculatedFlowers,
 		calculatedTotalAmountBoxes: item.calculatedTotalAmountBoxes,
 		calculatedTotalAmountFlowers: item.calculatedTotalAmountFlowers,
@@ -87,4 +117,4 @@ const deleteItem = function(id, item) {
 	}
 }
 
-export { fetchAll, fetchSingle, createItem, updateItem, deleteItem };
+export { fetchAll, fetchSingle, createItem, updateItem, updateMagicLink, completePart, deleteItem };

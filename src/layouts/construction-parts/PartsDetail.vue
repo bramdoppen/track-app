@@ -30,8 +30,8 @@
 					<span>Onderdeel afgerond?:</span>
 				</div>
 				<div class="faketable-content">
-					<div>Nee</div>
-					<Button type="button" title="Onderdeel afronden" />
+					<div>{{singlePart.isCompleted ? "Ja" : "Nee"}}</div>
+					<Button type="button" title="Onderdeel afronden" v-if="!singlePart.isCompleted" @click="handleCompletePart(singlePart.id)"/>
 				</div>
 			</div>
 			<div class="faketable-row">
@@ -103,6 +103,7 @@
 	import { useStore } from "vuex";
 	import { useRoute } from "vue-router";
 	import { db } from "@/functions/firebaseConfig.js";
+	import { completePart } from "@/api/constructionParts";
 	import usePercentageCompleted from "@/composables/usePercentageCompleted";
 
 	import { useFirestore } from "@vueuse/firebase/useFirestore.esm";
@@ -202,6 +203,9 @@
 				calculatedPercentage,
 				dayjs,
 				places: store.state.places,
+				handleCompletePart: (partId) => {
+					completePart(partId)
+				}
 			};
 		},
 	};

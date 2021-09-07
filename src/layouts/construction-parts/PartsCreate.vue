@@ -5,6 +5,8 @@
 				<h2 v-if="routeQuery.manage === 'calculated'">Berekende kratten</h2>
 				<h2 v-else>Onvoorzien/tekort kratten</h2>
 				<form class="form" @submit.prevent="onAddingFlowersComplete()" style="margin-top: 20px">
+					<span style="background: red; color: #fff; padding: 15px 20px; border-radius: 5px; margin-bottom: 20px;" v-if="routeQuery.manage === 'correction' && constructionPart.magicLink && constructionPart.magicLink.id !== routeId">Let op! Er is een magische link actief. Pas de master aan.</span>
+					<span style="background: gray; color: #fff; padding: 15px 20px; border-radius: 5px; margin-bottom: 20px;" v-if="magicLinkedPartIds.length > 0">Dit onderdeel wordt door {{magicLinkedPartIds.length}} onderdelen gebruikt als magische link.</span>
 					<FormInput
 						v-for="(flower, flowerIdx) in allFlowers"
 						:key="flowerIdx"
@@ -29,11 +31,6 @@
 				<form class="form" @submit.prevent="handleSubmit(constructionPart)">
 					<FormInput label="Naam onderdeel" placeholder="Naam onderdeel" v-model:value="constructionPart.name" />
 					<FormInput label="Omschrijving" placeholder="Omschrijving" v-model:value="constructionPart.description" />
-					<!-- <label for="input-three" class="f-label">Magische link (aan ander onderdeel):</label>
-					<select id="input-three" class="f-input" v-model="user.corsoGroup" required>
-						<option disabled>Selecteer onderdeel</option>
-						<option v-for="group in corsoGroups" :key="group.id" v-bind:value="group">{{ group.name }}</option>
-					</select> -->
 					<hr style="border-color: #ddd; border-top: 0; width: 100%;" />
 					<BoxListViewItem
 						title="Berekende kratten"
@@ -45,7 +42,20 @@
 						:sub="`${constructionPart.correctionTotalAmountBoxes} krat (${constructionPart.correctionTotalAmountFlowers} dahlia's)`"
 						:onEdit="() => onAddingFlowerChange('correction')"
 					/>
-					<span v-if="deleteDisabled" style="text-align: center; margin-top: 10px; opacity: 0.6; font-size: 0.8em;">Verwijderen is niet mogelijk</span>
+					<hr style="border-color: #ddd; border-top: 0; width: 100%;" />
+
+					<FormSelect
+						label="Magische link (sync tussen onderdelen)"
+						placeholder="Selecteer onderdeel als master"
+						:options="partsWithId"
+						v-model:value="constructionPart.magicLink"
+						:disabled="routeId || magicLinkedPartIds.length > 0"
+					/>
+					<span style="font-size:0.8em;opacity:0.75; color: darkred;" v-if="magicLinkedPartIds.length > 0">Je kunt geen onderdeel selecteren, dit onderdeel wordt als magische link gebruikt.</span>
+					<span style="font-size:0.8em;opacity:0.75;" v-else>Dit zorgt ervoor dat tekorten op de 'master' ook op dit onderdeel als indicatie aangegeven worden.</span>
+					<hr style="border-color: #ddd; border-top: 0; width: 100%;" />
+
+					<span v-if="deleteDisabled" style="text-align: center; margin-top: 10px; opacity: 0.6; font-size: 0.8em;">Verwijderen onderdeel is niet mogelijk</span>
 					<Button type="button" title="Verwijderen" look="error" v-if="routeId" :disabled="deleteDisabled" @click="handleDelete(constructionPart)" />
 					<Button type="submit" title="Opslaan" />
 				</form>
@@ -66,16 +76,20 @@
 	import Button from "@/components/base/Button.vue";
 	import BoxListViewItem from "@/components/base/BoxListViewItem.vue";
 	import FormInput from "@/components/base/form/FormInput.vue";
+	import FormSelect from "@/components/base/form/FormSelect.vue";
 	import { useRoute, useRouter } from "vue-router";
 	import { ref, onMounted, computed, watchEffect, reactive } from "vue";
-	import { fetchSingle, createItem, updateItem, deleteItem } from "@/api/constructionParts.js";
+	import { fetchSingle, createItem, updateItem, updateMagicLink, deleteItem } from "@/api/constructionParts.js";
 	import { fetchFlowerTypes } from "@/api/flowerTypes.js";
+	import { db } from "@/functions/firebaseConfig.js";
+	import { useFirestore } from "@vueuse/firebase/useFirestore.esm";
 
 	export default {
 		components: {
 			BasePage,
 			Button,
 			FormInput,
+			FormSelect,
 			BoxListViewItem,
 		},
 		setup() {
@@ -97,6 +111,7 @@
 				name: null,
 				description: null,
 				totalSurface: null,
+				magicLink: null,
 				assignedBoxes: [],
 				processedBoxes: [],
 				processedTotalAmountFlowers: 0,
@@ -113,21 +128,52 @@
 			// ------------------------
 
 			const buildCalculatedOnEdit = (part, type) => {
-				if(type === "calculated") {
-				part.calculatedFlowers.forEach((calculated) => {
+				if (type === "calculated") {
+					part.calculatedFlowers.forEach((calculated) => {
 						flowerBatch.value[calculated.id] = calculated.calculatedBoxes;
 					});
-				}
-				else if(type === "correction") {
-				part.correctionFlowers.forEach((calculated) => {
+				} else if (type === "correction") {
+					part.correctionFlowers.forEach((calculated) => {
 						flowerBatch.value[calculated.id] = calculated.calculatedBoxes;
 					});
 				}
 			};
 			watchEffect(() => {
-				if(routeQuery.value.manage) {
-					buildCalculatedOnEdit(constructionPart.value, routeQuery.value.manage)
+				if (routeQuery.value.manage) {
+					buildCalculatedOnEdit(constructionPart.value, routeQuery.value.manage);
 				}
+			});
+
+			// Get all parts (usage for magic link)
+			// Get constructionParts
+			const allParts = useFirestore(db.collection("constructionParts"));
+			const partsWithId = computed(() => {
+				let arr = [];
+				if (allParts.value) {
+					const parts = [...allParts.value];
+					arr = parts.map((part) => {
+						return {
+							id: part.id,
+							name: part.name,
+						};
+					});
+				}
+				return arr;
+			});
+
+			// Get all parts where THIS part is magic-linked
+			const magicLinkedPartIds = computed(() => {
+				let arr = [];
+				if(allParts.value) {
+					const parts = [...allParts.value];
+					console.log(parts)
+					arr = parts.filter((part) => {
+						if(part.magicLink) {
+							return part.magicLink.id === routeId
+						}
+					}).map(part => part.id)
+				}
+				return arr;
 			})
 
 			// Get data (if id specified in route)
@@ -148,7 +194,6 @@
 				partId.value = routeId;
 				onMounted(() => getSingleConstructionPart(routeId));
 			}
-
 
 			// ------------------------
 			// ---- Get flowertypes
@@ -172,14 +217,21 @@
 
 			onMounted(getAllFlowers);
 
-
 			// ------------------------
 			// ---- Handle submits
 			// ------------------------
 
 			const handleSubmit = (part) => {
 				if (routeId) {
-					updateItem(routeId, part).then(() => {
+					const promises = [];
+					if(magicLinkedPartIds.value && window.confirm(`Wil je de tekorten op dit onderdeel synchroniseren met de gelinkte wagenonderdelen (${magicLinkedPartIds.value.length}), of alleen dit item updaten?`)) {
+						magicLinkedPartIds.value.forEach(link => {
+							promises.push(updateMagicLink(link, part))
+						})
+					}
+
+					promises.push(updateItem(routeId, part))
+					Promise.all(promises).then(() => {
 						router.push({ name: "parts-list" });
 					});
 				} else {
@@ -233,7 +285,6 @@
 			};
 
 			const onAddingFlowersComplete = () => {
-				console.log(routeQuery.value.manage, flowerBatch.value)
 				if (routeQuery.value.manage === "calculated") {
 					constructionPart.value.calculatedTotalAmountBoxes = totalAmountToAdd.value.boxes;
 					constructionPart.value.calculatedTotalAmountFlowers = totalAmountToAdd.value.flowers;
@@ -253,6 +304,8 @@
 				routeQuery,
 				constructionPart,
 				allFlowers,
+				partsWithId,
+				magicLinkedPartIds,
 				flowerBatch,
 				refresh: getSingleConstructionPart,
 				getFlower,
@@ -262,7 +315,7 @@
 				onAddingFlowersComplete,
 				totalAmountToAdd,
 				deleteDisabled: computed(() => {
-					return constructionPart.value.assignedBoxes.length > 0 || constructionPart.value.processedTotalAmountFlowers > 0;
+					return constructionPart.value.assignedBoxes.length > 0 || constructionPart.value.processedTotalAmountFlowers > 0 || magicLinkedPartIds.value.length > 0;
 				}),
 			};
 		},
