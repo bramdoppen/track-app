@@ -4,8 +4,12 @@
 			<div v-if="isLoading">Laden...</div>
 			<form class="form" @submit.prevent="handleSubmit(flowerId, flower)" v-if="!isLoading">
 				<FormInput label="Bloem ID" placeholder="1100" :value="flowerId" type="number" disabled />
-				<FormInput label="Naam bloem" placeholder="White Aster" :value="flower.name" disabled />
-				<FormInput label="Levering / bestelde kratten" placeholder="Aantal kratten besteld" v-model:value="flower.orderedAmount" type="number" />
+				<FormInput label="Naam bloem" placeholder="" :value="flower.name" disabled />
+				<hr style="border-color: #ddd; border-top: 0; width: 100%;">
+				<FormInput label="Extern besteld" placeholder="Aantal kratten besteld" v-model:value="flower.ordered.external" type="number" step=".1" />
+				<FormInput label="Intern: (Van eigen land)" placeholder="Aantal kratten besteld" v-model:value="flower.ordered.internal" type="number" step=".1" />
+				<hr style="border-color: #ddd; border-top: 0; width: 100%;">
+				<FormInput label="Tekort: (onvoorzien tijdens plakweekend)" placeholder="Aantal kratten besteld" v-model:value="flower.ordered.correction" type="number" step=".1" />
 				<Button type="submit" title="Opslaan" />
 			</form>
 		</div>
@@ -19,7 +23,7 @@
 	import { useRoute, useRouter } from "vue-router";
 	import { ref, onMounted } from "vue";
 	import { fetchSingleFlowerType } from "@/api/flowerTypes.js";
-	import { db } from "@/functions/firebaseConfig.js";
+	import { fb, db } from "@/functions/firebaseConfig.js";
 
 	export default {
 		components: {
@@ -38,12 +42,18 @@
 			const flower = ref({
 				name: null,
 				code: null,
-				orderedAmount: 0,
+				ordered: {
+					external: null,
+					internal: null,
+					correction: null,
+				},
 			});
 
 			// Get data (if id specified in route)
 			const getAll = async (id) => {
-				flower.value = await fetchSingleFlowerType(id).then((response) => {
+				await fetchSingleFlowerType(id).then((response) => {
+					const initialFlower = flower.value;
+					flower.value = { ...initialFlower, ...response };
 					isLoading.value = false;
 					return response;
 				});
@@ -60,18 +70,21 @@
 					.collection("flowerTypes")
 					.doc(id)
 					.update({
-						orderedAmount: flower.value.orderedAmount,
+						orderedAmount: fb.firestore.FieldValue.delete(),
+						ordered: {
+							external: parseFloat(flower.value.ordered.external) || null,
+							internal: parseFloat(flower.value.ordered.internal) || null,
+							correction: parseFloat(flower.value.ordered.correction) || null,
+						},
 					});
 			};
 
 			const handleSubmit = (flwId) => {
-        if(flower.value.orderedAmount) {
-          setDeliveryOnFlowerType(flwId).then(() => {
-            router.push({ name: "deliveries-list" })
-          });
-        } else {
-          router.push({ name: "deliveries-list" })
-        }
+				setDeliveryOnFlowerType(flwId).then(() => {
+					router.push({ name: "deliveries-list" });
+				});
+				
+				
 			};
 
 			return {

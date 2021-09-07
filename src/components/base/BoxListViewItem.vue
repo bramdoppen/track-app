@@ -1,7 +1,7 @@
 <template>
 	<div class="box-item">
 		<strong class="box-title">{{ title }}</strong>
-		<span class="box-sub">{{ sub }}</span>
+		<span class="box-sub">{{ sub }}<slot></slot></span>
 		<Button class="box-button-edit" look="xsmall" :title="onEditText ? onEditText : 'Bewerk'" v-if="onEdit" @click="handleEdit()" />
 	</div>
 </template>
@@ -53,8 +53,10 @@
 		font-weight: 300;
 		background: #fff;
 		display: grid;
-		grid-template-areas: "title edit delete" "sub edit delete";
-		grid-template-columns: 1fr auto auto;
+		grid-template-areas: "title edit" "sub edit";
+		column-gap: 10px;
+		row-gap: 4px;
+		grid-template-columns: 1fr auto;
 		grid-template-rows: 1fr auto;
 		align-items: center;
 		& > .box-title {
@@ -62,6 +64,7 @@
 		}
 		& > .box-sub {
 			grid-area: sub;
+			font-size: 0.9em;
 		}
 		& > .box-button-edit {
 			grid-area: edit;

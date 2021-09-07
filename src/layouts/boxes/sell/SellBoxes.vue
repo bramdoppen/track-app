@@ -4,7 +4,7 @@
 			<Box v-if="place != 3">
 				<h3>Kratten uitchecken</h3>
         <p style="margin-bottom: 20px;">Haal kratten uit het systeem wanneer deze verkocht worden of naar jeugdwagen gaan.</p>
-				<FormInput label="Reden verkoop:" placeholder="Vul hier de reden van verkoop in" v-model:value="reason" />
+				<FormInput label="Reden verkoop:" placeholder="Reden van verkoop" v-model:value="reason" />
 				<Button look="green" title="Start verkoop" @click="startSelling()"></Button>
 			</Box>
 		</BoxesList>

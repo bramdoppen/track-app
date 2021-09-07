@@ -14,6 +14,14 @@
 			</div>
 			<div class="faketable-row">
 				<div class="faketable-head">
+					<span>Krat-ID:</span>
+				</div>
+				<div class="faketable-content">
+					<div>{{ boxId }} </div>
+				</div>
+			</div>
+			<div class="faketable-row">
+				<div class="faketable-head">
 					<span>Bloemen in krat:</span>
 				</div>
 				<div class="faketable-content">
@@ -50,7 +58,7 @@
 					<span>Aangemaakt:</span>
 				</div>
 				<div class="faketable-content">
-					<span>{{ dayjs(data.createdOn.seconds * 1000).calendar() }}</span
+					<span>{{ dayjs(data.createdOn.seconds * 1000).format("ddd DD MMM YYYY, HH:mm uur") }}</span
 					><br />
 					<span>Door: {{ data.createdBy.name }}</span>
 				</div>
@@ -60,7 +68,7 @@
 					<span>Laatste update:</span>
 				</div>
 				<div class="faketable-content" v-if="data.updatedBy && data.updatedOn">
-					<span>{{ dayjs(data.updatedOn.seconds * 1000).calendar() }}</span
+					<span>{{ dayjs(data.updatedOn.seconds * 1000).format("ddd DD MMM YYYY, HH:mm uur") }}</span
 					><br />
 					<span>Door: {{ data.updatedBy.name }}</span>
 				</div>
@@ -74,7 +82,7 @@
 				</div>
 				<div class="faketable-content" v-if="data.updateLog" style="margin-top: 10px;">
 					<div class="faketable-row logboek-item" v-for="(log, logIndex) in data.updateLog" :key="logIndex">
-						<span class="logboek-timestamp">{{ dayjs.unix(log.updatedOn.seconds).calendar() }}</span>
+						<span class="logboek-timestamp">{{ dayjs.unix(log.updatedOn.seconds).format("ddd DD MMM YYYY, HH:mm uur") }}</span>
 						<span class="logboek-user">{{ log.updatedBy.name }}</span>
 						<span class="logboek-message">{{ log.message }}</span>
 					</div>
@@ -126,6 +134,7 @@
 
 			return {
 				ui,
+				boxId: route.params.id,
 				data,
 				dayjs,
 				places: store.state.places,

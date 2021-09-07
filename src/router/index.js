@@ -170,6 +170,11 @@ const routes = [
 		name: "activation-pending",
 		component: () => import("../layouts/account/Pending.vue"),
 	},
+	{
+		path: "/realtime",
+		name: "realtime-overview",
+		component: () => import("../layouts/realtime/Realtime.vue"),
+	},
 ];
 
 const router = createRouter({

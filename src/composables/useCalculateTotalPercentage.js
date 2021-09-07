@@ -9,7 +9,7 @@ export default function useCalculateTotalPercentage(_allParts) {
 
   allParts.value.forEach(part => {
     if(part.calculatedTotalAmountFlowers) {
-      calculatedFlowers.value += part.calculatedTotalAmountFlowers;
+      calculatedFlowers.value += parseFloat(part.calculatedTotalAmountFlowers);
     }
     if(part.processedTotalAmountFlowers) {
       processedFlowers.value += part.processedTotalAmountFlowers;
@@ -18,7 +18,7 @@ export default function useCalculateTotalPercentage(_allParts) {
       correctionFlowers.value += part.correctionTotalAmountFlowers;
     }
     if(part.correctionTotalAmountBoxes) {
-      correctionBoxes.value += part.correctionTotalAmountBoxes;
+      correctionBoxes.value += parseFloat(part.correctionTotalAmountBoxes);
     }
   });
 

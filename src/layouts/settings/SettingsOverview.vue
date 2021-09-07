@@ -8,7 +8,7 @@
       </Box>
       <Box>
         <h3>Leveringen</h3>
-        <p>Beheer verwachtte bloemleveringen per uur</p>
+        <p>Beheer verwachtte bloemleveringen (extern, intern en tekorten).</p>
         <Button to="/deliveries/list" look="green" title="Bloemleveringen"></Button>
       </Box>
       <Box>

@@ -31,15 +31,15 @@
 				boxes.forEach((box) => {
 					// Check index of existing box
 					const existsAtIndex = arr.findIndex((item) => {
-						return item.name == box.data.flowerType.name;
+						return item.name == box.flowerType.name;
 					});
 
 					// Find only boxes with a matching state
-					if (box.data.state === state.value) {
+					if (box.state === state.value) {
 						if (existsAtIndex == -1) {
-							const flowerColor = box.data.flowerType.colorHex || "#000";
+							const flowerColor = box.flowerType.colorHex || "#000";
 							arr.push({
-								name: box.data.flowerType.name,
+								name: box.flowerType.name,
 								flowerColor: flowerColor,
 								amount: 1,
 							});
@@ -65,12 +65,33 @@
 					],
 				},
 				options: {
-					indexAxis: "y",
-          plugins: {
-            legend: {
-              display: false,
-            }
-          }
+					indexAxis: "x",
+					maintainAspectRatio: false,
+					responsive: true,
+					borderWidth: 1,
+					scales: {
+						y: {
+							ticks: {
+								precision: 0,
+
+								font: {
+									size: 16,
+								},
+							},
+						},
+						x: {
+							ticks: {
+								font: {
+									size: 18,
+								},
+							},
+						},
+					},
+					plugins: {
+						legend: {
+							display: false,
+						},
+					},
 				},
 			};
 

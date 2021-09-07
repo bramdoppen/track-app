@@ -7,12 +7,8 @@
 						v-for="item in allDeliveries"
 						:key="item.id"
 						:title="`${item.id} - ${item.name}`"
-						:sub="`${item.orderedAmount || 0} kratten besteld`"
-						:onEdit="
-							() => {
-								onEdit(item);
-							}
-						"
+						:sub="`${calculateOrdered(item) || 0} kratten besteld`"
+						:onEdit="() => onEdit(item)"
 					/>
 				</transition-group>
 			</BoxesList>
@@ -35,7 +31,7 @@
 	export default {
 		components: {
 			BasePage,
-      BoxesList,
+			BoxesList,
 			BoxListViewItem,
 		},
 		setup() {
@@ -47,9 +43,18 @@
 			function onEdit(item) {
 				router.push({ name: "deliveries-edit", params: { id: item.id } });
 			}
+			const calculateOrdered = (item) => {
+				if (item.ordered) {
+					const external = parseFloat(item.ordered.external) || 0;
+					const internal = parseFloat(item.ordered.internal) || 0;
+					const correction = parseFloat(item.ordered.correction) || 0;
+					return external + internal + correction;
+				}
+			};
 			return {
 				allDeliveries,
 				onEdit,
+				calculateOrdered,
 			};
 		},
 	};

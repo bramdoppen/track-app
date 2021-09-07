@@ -15,9 +15,9 @@
 				<Button to="/boxes/batch-scan" look="green" title="Start Runnermodus"></Button>
 			</Box>
 			<Box>
-				<h3>Bekijk krat &#128300;</h3>
-				<p>Bekijk gegevens van een krat</p>
-				<Button to="/boxes/scan?detail=true" look="green" title="Scan krat"></Button>
+				<h3>Bekijk gegevens krat &#128300;</h3>
+				<p>Bekijk de details van één krat</p>
+				<Button to="/boxes/scan?detail=true" look="green" title="Inspecteer krat"></Button>
 			</Box>
 			<Box>
 				<h3>Alle kratten</h3>

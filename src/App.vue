@@ -3,24 +3,24 @@
 </template>
 
 <script>
-import { useWindowSize } from '@vueuse/core'
-import { watchEffect } from 'vue';
+	import { useWindowSize } from "@vueuse/core";
+	import { watchEffect } from "vue";
 
-export default {
-	setup() {
-		const { height } = useWindowSize();
+	export default {
+		setup() {
+			const { height } = useWindowSize();
 
-		function setVh(innerHeight) {
-			let vh = innerHeight * 0.01;
-			// Then we set the value in the --vh custom property to the root of the document
-			document.documentElement.style.setProperty("--vh", `${vh}px`);
-		}
-		
-		watchEffect(() => {
-			setVh(height.value)
-		});
-	},
-}
+			function setVh(innerHeight) {
+				let vh = innerHeight * 0.01;
+				// Then we set the value in the --vh custom property to the root of the document
+				document.documentElement.style.setProperty("--vh", `${vh}px`);
+			}
+
+			watchEffect(() => {
+				setVh(height.value);
+			});
+		},
+	};
 </script>
 <style>
 	:root {
@@ -40,7 +40,7 @@ export default {
 		--fz-base: 16px;
 		--p-side: 20px;
 	}
-	@import url('https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@300;600;700&display=swap');
+	@import url("https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@300;600;700&display=swap");
 
 	html,
 	body {
@@ -72,9 +72,9 @@ export default {
 
 	.loading-panel {
 		height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 		& > div {
 			text-align: center;
 		}
@@ -103,5 +103,27 @@ export default {
 	.trans-list-enter-from,
 	.trans-list-leave-to {
 		opacity: 0;
+	}
+	table.tableone {
+		border-collapse: collapse;
+		font-size: 14px;
+
+		& th {
+			border-bottom: 1px solid gray;
+		}
+		& tr > td,
+		& tr > th {
+			padding: 4px 8px;
+			&:first-child {
+				width: 100%;
+				padding-left: 0;
+			}
+			&:last-child {
+				padding-right: 0;
+			}
+		}
+		& th {
+			text-align: left;
+		}
 	}
 </style>

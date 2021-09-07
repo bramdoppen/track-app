@@ -7,7 +7,7 @@ const fetchFlowerTypes = () => {
 		.then((querySnapshot) => {
 			const arr = [];
 			querySnapshot.forEach((doc) => {
-				arr.push({ id: doc.id, name: doc.data().name, boxAmount: doc.data().boxAmount });
+				arr.push({ id: doc.id, name: doc.data().name, boxAmount: doc.data().boxAmount, colorHex: doc.data().colorHex });
 			});
 			return arr;
 		});

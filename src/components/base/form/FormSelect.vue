@@ -1,0 +1,95 @@
+<template>
+  <div class="f-row">
+    <label v-if="label">{{ label }}</label>
+    <div class="input-wrapper" :class="iconFlip ? 'icon-first' : ''">
+      <select
+        @change="handleChange"
+        :class="icon ? 'has-icon' : ''"
+      >
+        <option disabled selected>{{ placeholder }}</option>
+        <option v-for="selectDropdownOption of options" :key="selectDropdownOption.id">
+          {{ selectDropdownOption.title }}
+        </option>
+      </select>
+    </div>
+  </div>
+</template>
+
+<script>
+
+export default {
+  props: {
+    placeholder: {
+      type: String,
+      default: "Maak een keuze",
+    },
+    options: {
+      type: Array,
+      required: true,
+    },
+    value: {
+      required: true,
+    },
+    iconFlip: {
+      type: Boolean,
+      default: false,
+    },
+    icon: {
+      type: String,
+    },
+    label: {
+      type: String,
+    },
+  },
+  emits: ["update:value"],
+  setup: (props, { emit }) => {
+    const handleChange = (e) => {
+      emit("update:value", e.target.value);
+    }
+    return {
+      handleChange,
+    };
+  },
+};
+</script>
+
+<style scoped>
+	.f-row {
+		display: flex;
+		flex-direction: column;
+		text-align: left;
+		gap: 8px;
+	}
+
+	label {
+		font-weight: 600;
+		font-size: 14px;
+		font-family: system-ui;
+	}
+
+	input,
+	select {
+		font-family: system-ui;
+		padding: 19px 25px;
+		font-size: 16px;
+		border: 2px solid #eaeaea;
+		background: white;
+		border-radius: 10px;
+		outline: 0;
+		appearance: none;
+		transition: border-color 0.2s ease;
+		
+		&[disabled] {
+			background: #eaeaea;
+
+		}
+	}
+	input:focus,
+	select:focus {
+		border-color: var(--color-secondary);
+	}
+	.errors {
+		color: var(--color-error);
+		line-height: 1.4;
+	}
+</style>

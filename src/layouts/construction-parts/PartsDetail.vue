@@ -1,6 +1,10 @@
 <template>
 	<BasePage :title="singlePart ? singlePart.name : 'Detail onderdeel'">
 		<div class="faketable-table" v-if="singlePart">
+			<div class="box-holder">
+				<BoxListViewItem :title="`${calculatedPercentage}%`" sub="afgerond" />
+				<BoxListViewItem :title="`${singlePart.correctionTotalAmountFlowers} &#128230;`" sub="tekort" />
+			</div>
 			<div class="faketable-row">
 				<div class="faketable-head">
 					<span>Omschrijving:</span>
@@ -40,65 +44,35 @@
 			</div>
 			<div class="faketable-row">
 				<div class="faketable-head">
-					<span>Berekende kratten ({{ singlePart.calculatedTotalAmountBoxes }} kratten):</span>
+					<span>Kratten (Berekend: {{ singlePart.calculatedTotalAmountBoxes }} kratten):</span>
 				</div>
 				<div class="faketable-content">
-					<table>
+					<table class="tableone">
 						<tr>
-							<th>Bloemtype</th>
-							<th>Krat</th>
-							<th>Dahlia's</th>
+							<th>Bloem</th>
+							<th>CA</th>
+							<th style="border-right:1px solid black;">TK</th>
+							<th>AT</th>
+							<th>VW</th>
 						</tr>
-						<tr v-for="(calculated, idx) in singlePart.calculatedFlowers" :key="idx">
-							<td>{{ calculated.id }} - {{ calculated.name }}</td>
-							<td>{{ calculated.calculatedBoxes }}</td>
-							<td>{{ calculated.calculatedFlowers }}</td>
+						<tr v-for="(totalTable, idx) in tables.total" :key="idx">
+							<td>{{ totalTable.flowerId }} - {{ totalTable.flowerName }}</td>
+							<td>{{ totalTable.calculated }}</td>
+							<td style="border-right:1px solid black;">{{ totalTable.correction }}</td>
+							<td>{{ totalTable.assigned }}</td>
+							<td>{{ totalTable.processed }}</td>
 						</tr>
 					</table>
+					<div style="margin-top: 10px; font-size: 10px; font-style: italic;">CA = Berekend; TK = Tekort; <br>VW = Verwerkt; AT = Kratten bij onderdeel;</div>
 				</div>
 			</div>
-			<div class="faketable-row">
-				<div class="faketable-head">
-					<span>Toegewezen aan onderdeel ({{ singlePart.assignedBoxes.length }} kratten):</span>
-				</div>
-				<div class="faketable-content">
-					<table>
-						<tr>
-							<th>Bloemtype</th>
-							<th>Krat-id</th>
-						</tr>
-						<tr v-for="(item, idx) in singlePart.assignedBoxes" :key="idx">
-							<td>{{ item.flowerType.id }} - {{ item.flowerType.name }}</td>
-							<td>{{ item.id }}</td>
-						</tr>
-					</table>
-				</div>
-			</div>
-			<div class="faketable-row">
-				<div class="faketable-head">
-					<span>Verwerkt: {{ singlePart.processedTotalAmountFlowers }} dahlias ({{ singlePart.processedBoxes.length }} kratten):</span>
-				</div>
-				<div class="faketable-content">
-					<table>
-						<tr>
-							<th>Bloemtype</th>
-							<th>Krat-id</th>
-							<th>Uit krat gebruikt</th>
-						</tr>
-						<tr v-for="(item, idx) in singlePart.processedBoxes" :key="idx">
-							<td>{{ item.flowerType.id }} - {{ item.flowerType.name }}</td>
-							<td>{{ item.id }}</td>
-							<td>{{ item.usedFromBox }}</td>
-						</tr>
-					</table>
-				</div>
-			</div>
+
 			<div class="faketable-row">
 				<div class="faketable-head">
 					<span>Aangemaakt:</span>
 				</div>
 				<div class="faketable-content">
-					<span>{{ dayjs(singlePart.createdOn.seconds * 1000).calendar() }}</span
+					<span>{{ dayjs(singlePart.createdOn.seconds * 1000).format("ddd DD MMM YYYY, HH:mm uur") }}</span
 					><br />
 					<span>Door: {{ singlePart.createdBy.name }}</span>
 				</div>
@@ -108,7 +82,7 @@
 					<span>Laatste update:</span>
 				</div>
 				<div class="faketable-content" v-if="singlePart.updatedBy && singlePart.updatedOn">
-					<span>{{ dayjs(singlePart.updatedOn.seconds * 1000).calendar() }}</span
+					<span>{{ dayjs(singlePart.updatedOn.seconds * 1000).format("ddd DD MMM YYYY, HH:mm uur") }}</span
 					><br />
 					<span>Door: {{ singlePart.updatedBy.name }}</span>
 				</div>
@@ -123,6 +97,9 @@
 <script>
 	import BasePage from "@/layouts/BasePage.vue";
 	import Button from "@/components/base/Button.vue";
+	import BoxListViewItem from "@/components/base/BoxListViewItem.vue";
+
+	import { watch, reactive } from "vue";
 	import { useStore } from "vuex";
 	import { useRoute } from "vue-router";
 	import { db } from "@/functions/firebaseConfig.js";
@@ -130,24 +107,97 @@
 
 	import { useFirestore } from "@vueuse/firebase/useFirestore.esm";
 	import dayjs from "dayjs";
-	import Calendar from "dayjs/plugin/calendar";
-	dayjs.extend(Calendar);
 
 	export default {
 		components: {
 			BasePage,
 			Button,
+			BoxListViewItem,
 		},
 		setup() {
 			const store = useStore();
 			const route = useRoute();
 			const routeId = route.params.id;
 
-			const singlePart = useFirestore(db.collection("constructionParts").doc(routeId));
+			const tables = reactive({
+				total: [],
+			});
 
+			const singlePart = useFirestore(db.collection("constructionParts").doc(routeId));
 			const { calculatedPercentage } = usePercentageCompleted(singlePart);
 
+			watch(
+				() => singlePart.value,
+				() => {
+					singlePart.value.assignedBoxes.forEach((box) => {
+						const idx = tables.total.findIndex((item) => item.flowerId === box.flowerType.id);
+						const emptyObj = {
+							calculated: 0,
+							processed: 0,
+							correction: 0,
+							assigned: 1,
+							flowerId: box.flowerType.id,
+							flowerName: box.flowerType.name,
+						};
+						if (idx >= 0) {
+							tables.total[idx].assigned += 1;
+						} else {
+							tables.total.push(emptyObj);
+						}
+					});
+					singlePart.value.calculatedFlowers.forEach((box) => {
+						const idx = tables.total.findIndex((item) => item.flowerId === box.id);
+						const emptyObj = {
+							calculated: parseFloat(box.calculatedBoxes),
+							processed: 0,
+							correction: 0,
+							assigned: 0,
+							flowerId: box.id,
+							flowerName: box.name,
+						};
+						if (idx >= 0) {
+							tables.total[idx].calculated += parseFloat(box.calculatedBoxes);
+						} else {
+							tables.total.push(emptyObj);
+						}
+					});
+					singlePart.value.correctionFlowers.forEach((box) => {
+						const idx = tables.total.findIndex((item) => item.flowerId === box.id);
+						const emptyObj = {
+							calculated: 0,
+							processed: 0,
+							correction: parseFloat(box.calculatedBoxes),
+							assigned: 0,
+							flowerId: box.id,
+							flowerName: box.name,
+						};
+						if (idx >= 0) {
+							tables.total[idx].correction += parseFloat(box.calculatedBoxes);
+						} else {
+							tables.total.push(emptyObj);
+						}
+					});
+					singlePart.value.processedBoxes.forEach((box) => {
+						const idx = tables.total.findIndex((item) => item.flowerId === box.flowerType.id);
+						const emptyObj = {
+							calculated: 0,
+							processed: 1,
+							correction: 0,
+							assigned: 0,
+							flowerId: box.flowerType.id,
+							flowerName: box.flowerType.name,
+						};
+						if (idx >= 0) {
+							tables.total[idx].processed += 1;
+						} else {
+							tables.total.push(emptyObj);
+						}
+					});
+				},
+			);
+
 			return {
+				tables,
 				singlePart,
 				calculatedPercentage,
 				dayjs,
@@ -171,9 +221,7 @@
 	tr {
 		padding: 0;
 	}
-	th {
-		text-align: left;
-	}
+	
 	.td-flex {
 		display: flex;
 		flex-direction: column;
@@ -272,5 +320,20 @@
 		font-size: 14px;
 		font-family: var(--font-title);
 		font-weight: 600;
+	}
+
+	.box-holder {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+		gap: 8px;
+
+		& :deep(.box-item) {
+			text-align: center;
+			padding-left: 10px;
+			padding-right: 10px;
+		}
+		& :deep(span.box-sub) {
+			font-size: 12px;
+		}
 	}
 </style>

@@ -8,7 +8,7 @@
 						:class="{ inactive: item.data.state > 4 }"
 						:key="item.id"
 						:title="`${item.data.flowerType.id} - ${item.data.flowerType.name}`"
-						:sub="`${item.id} | ${places[item.data.state]} | ${dayjs(new Date(item.data.createdOn.seconds * 1000)).fromNow()}`"
+						:sub="`${item.id} | ${places[item.data.state]} | ${dayjs(new Date(item.data.createdOn.seconds * 1000)).format('ddd DD MMM YYYY, HH:mm uur') }`"
 						:onEdit="
 							() => {
 								onEdit(item);
