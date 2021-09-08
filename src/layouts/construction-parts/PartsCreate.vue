@@ -166,7 +166,6 @@
 				let arr = [];
 				if(allParts.value) {
 					const parts = [...allParts.value];
-					console.log(parts)
 					arr = parts.filter((part) => {
 						if(part.magicLink) {
 							return part.magicLink.id === routeId

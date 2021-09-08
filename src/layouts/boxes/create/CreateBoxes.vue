@@ -3,18 +3,18 @@
 		<div class="hide-on-print grid">
 			<div class="krat-zoeken">
 				<SearchFlower v-model:result="results" />
-				<ul>
-					<li v-for="(result, idx) in results" :key="idx">
+				<ul class="resultList">
+					<li v-for="(result, idx) in results" :key="idx" class="resultItem">
 						<SingleFlowerResult :result="result" v-model:batch="batch" />
 					</li>
 				</ul>
 			</div>
 			<div class="krat-printlijst">
-				<h2>Printlijst:</h2>
+				<h2 style="margin-bottom: 10px;">Printlijst:</h2>
 				<div class="empty" v-if="batch.length === 0">
 					<span>Geen kratten om te printen</span>
 				</div>
-				<BoxesList class="newBoxGroup">
+				<BoxesList class="newBoxGroup" gap="6px">
 					<BoxListViewItem
 						v-for="(box, index) in batch"
 						:key="index"
@@ -23,7 +23,7 @@
 					/>
 				</BoxesList>
 
-				<div class="button-holder">
+				<div class="button-holder" style="margin-top: 20px;">
 					<Button v-if="batch.length > 0" title="Kratten aanmaken" @click="startPrint()"></Button>
 				</div>
 			</div>
@@ -69,9 +69,12 @@
 			function createBoxesArray() {
 				batch.value.forEach((box) => {
 					for (let i = 0; i < box.amount; i++) {
-						printBatch.value.push(box);
+						const boxToPrint = {...box};
+						delete boxToPrint.amount
+						printBatch.value.push(boxToPrint);
 					}
 				});
+				console.log(printBatch.value)
 			}
 
 			function startPrint() {
@@ -105,6 +108,11 @@
 		list-style: none;
 		padding: 0;
 		margin: 0;
+	}
+	.resultList {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
 	}
 	.grid {
 		display: grid;

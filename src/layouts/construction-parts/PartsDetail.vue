@@ -30,11 +30,11 @@
 					<span>Onderdeel afgerond?:</span>
 				</div>
 				<div class="faketable-content">
-					<div>{{singlePart.isCompleted ? "Ja" : "Nee"}}</div>
-					<Button type="button" title="Onderdeel afronden" v-if="!singlePart.isCompleted" @click="handleCompletePart(singlePart.id)"/>
+					<div>{{ singlePart.isCompleted ? "Ja" : "Nee" }}</div>
+					<Button type="button" title="Onderdeel afronden" v-if="!singlePart.isCompleted && userPermissionLevel === 2" @click="handleCompletePart(singlePart.id)" />
 				</div>
 			</div>
-			<div class="faketable-row">
+			<div class="faketable-row" v-if="userPermissionLevel === 2">
 				<div class="faketable-head">
 					<span>Tekort beheren:</span>
 				</div>
@@ -63,7 +63,8 @@
 							<td>{{ totalTable.processed }}</td>
 						</tr>
 					</table>
-					<div style="margin-top: 10px; font-size: 10px; font-style: italic;">CA = Berekend; TK = Tekort; <br>VW = Verwerkt; AT = Kratten bij onderdeel;</div>
+
+					<div style="margin-top: 10px; font-size: 10px; font-style: italic;">CA = Berekend; TK = Tekort; <br />VW = Verwerkt; AT = Kratten bij onderdeel;</div>
 				</div>
 			</div>
 
@@ -99,7 +100,7 @@
 	import Button from "@/components/base/Button.vue";
 	import BoxListViewItem from "@/components/base/BoxListViewItem.vue";
 
-	import { watch, reactive } from "vue";
+	import { watch, reactive, ref, computed } from "vue";
 	import { useStore } from "vuex";
 	import { useRoute } from "vue-router";
 	import { db } from "@/functions/firebaseConfig.js";
@@ -197,6 +198,8 @@
 				},
 			);
 
+			const user = ref(store.state.user);
+
 			return {
 				tables,
 				singlePart,
@@ -204,8 +207,15 @@
 				dayjs,
 				places: store.state.places,
 				handleCompletePart: (partId) => {
-					completePart(partId)
-				}
+					completePart(partId);
+				},
+				userPermissionLevel: computed(() => {
+					if (user.value) {
+						return user.value.permissionLevel;
+					} else {
+						return 0;
+					}
+				}),
 			};
 		},
 	};
@@ -225,7 +235,7 @@
 	tr {
 		padding: 0;
 	}
-	
+
 	.td-flex {
 		display: flex;
 		flex-direction: column;

@@ -111,7 +111,6 @@ const createItem = function(item) {
 };
 
 const deleteItem = function(id, item) {
-	console.log(item.assignedBoxes.length == 0 && item.processedTotalAmountFlowers == 0)
 	if(item.assignedBoxes.length == 0 && item.processedTotalAmountFlowers == 0) {
 		return db.collection("constructionParts").doc(id).delete();
 	}

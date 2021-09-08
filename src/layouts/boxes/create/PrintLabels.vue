@@ -162,16 +162,16 @@
 					// Start printing (with timeout, so last QR gets printed as well)
 					this.printer.timeout = setTimeout(() => {
 						this.setStartPosition(this.boxesPrintList.length + 1) % 6;
-						window.print();
+						// window.print();
 					}, 1000);
 
-					window.addEventListener("afterprint", () => {
-						// Callback (Execute only when specified)
-						this.printer.isPrinting = false;
-						if (this.printStarted) {
-							this.printStarted();
-						}
-					});
+					// window.addEventListener("afterprint", () => {
+					// 	// Callback (Execute only when specified)
+					// 	this.printer.isPrinting = false;
+					// 	if (this.printStarted) {
+					// 		this.printStarted();
+					// 	}
+					// });
 				});
 			},
 		},
