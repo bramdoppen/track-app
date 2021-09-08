@@ -34,6 +34,8 @@
 	import ScanStatus from "@/layouts/scanner/ScanStatus.vue";
 	import { fb, db } from "@/functions/firebaseConfig.js";
 	import { updateBoxState } from "@/api/boxes";
+	import successSound from "@/assets/sounds/success-bling.mp3";
+	import errorSound from "@/assets/sounds/error-bling.mp3";
 
 	export default {
 		name: "Scanner",
@@ -244,7 +246,7 @@
 							this.scanError = false;
 							this.errorMessage = null;
 							this.scanCount++;
-							window.navigator.vibrate([50, 20, 100]);
+							this.playSuccess();
 						} else {
 							anime({
 								targets: ".qrscanner__item",
@@ -253,8 +255,8 @@
 								easing: "easeOutCubic",
 								background: "rgba(171, 93, 111, 1)",
 							});
-							window.navigator.vibrate([200, 20, 50]);
 							this.scanError = true;
+							this.playError();
 							this.errorMessage = "Krat bestaat niet in database";
 						}
 					})
@@ -273,6 +275,24 @@
 			},
 			prevPage() {
 				this.$router.go(-1);
+			},
+			playSuccess() {
+				if (store.state.user.preferences && store.state.user.preferences.allowHaptics) {
+					window.navigator.vibrate([50, 20, 100]);
+				}
+				if (store.state.user.preferences && store.state.user.preferences.allowSound) {
+					const music = new Audio(successSound);
+					music.play();
+				}
+			},
+			playError() {
+				if (store.state.user.preferences && store.state.user.preferences.allowHaptics) {
+					window.navigator.vibrate([200, 20, 50]);
+				}
+				if (store.state.user.preferences && store.state.user.preferences.allowSound) {
+					const music = new Audio(errorSound);
+					music.play();
+				}
 			},
 		},
 		computed: {

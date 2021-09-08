@@ -74,7 +74,7 @@
 						printBatch.value.push(boxToPrint);
 					}
 				});
-				console.log(printBatch.value)
+				// console.log(printBatch.value)
 			}
 
 			function startPrint() {

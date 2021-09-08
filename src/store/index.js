@@ -36,6 +36,10 @@ export default createStore({
 			state.user = null;
 			state.corsoGroup = null;
 		},
+		userPreferenceChange(state, obj) {
+			state.user.preferences[obj.type] = obj.val;
+			console.log(state.user)
+		},
 		changeStartCol(state, payload) {
 			state.printerStartCol = payload;
 		},
@@ -68,6 +72,9 @@ export default createStore({
 		},
 		userLogOut({ commit }) {
 			commit("userLogOut");
+		},
+		userPreferenceChange({ commit }, obj) {
+			commit("userPreferenceChange", obj);
 		},
 	},
 	modules: {},

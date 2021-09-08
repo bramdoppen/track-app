@@ -11,7 +11,6 @@
     "@j-t-mcc/vue3-chartjs": "^1.1.2",
     "@vueuse/core": "^6.0.0",
     "@vueuse/firebase": "^6.1.0",
-    "@vueuse/sound": "^1.1.7",
     "animejs": "^3.2.1",
     "chart.js": "^3.5.0",
     "core-js": "^3.6.5",

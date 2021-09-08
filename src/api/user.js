@@ -12,6 +12,10 @@ const addNewUserToDb = (user) => {
 			isAdmin: false,
 			isActivated: false,
 			permissionLevel: 0,
+			preferences: {
+				allowSound: true,
+				allowHaptics: true,
+			}
 		});
 };
 

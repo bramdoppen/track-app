@@ -56,6 +56,7 @@
 				if (!allParts.value) {
 					return;
 				}
+				
 				const { calculatedTotal } = useCalculateTotalPercentage(allParts.value);
 				return {
 					percentage: calculatedTotal.value,
@@ -126,8 +127,9 @@
 		align-items: center;
 		height: 100%;
 		font-size: 6vw;
-		gap: 0.2em;
+		gap: 0.1em;
 		font-weight: bold;
+		padding-bottom: 30px;
 		& > h2 {
 			font-size: 0.35em;
 			opacity: 0.5;

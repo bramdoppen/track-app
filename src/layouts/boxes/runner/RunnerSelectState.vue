@@ -62,7 +62,7 @@
 				store.commit("changeConstructionPart", { id: id, name: name });
 				router.push("/boxes/scan");
 			}
-			const places = computed(() => store.state.places)
+			const places = computed(() => store.state.places);
 			delete places.value[6];
 
 			return {
