@@ -34,10 +34,13 @@
 				</div>
 			</div>
 		</div>
+		<span class="version">v{{ version }}</span>
 	</div>
 </template>
 
 <script>
+	import { version } from "/package.json";
+
 	import { db } from "@/functions/firebaseConfig.js";
 	import { computed } from "vue";
 	import { useFirestore } from "@vueuse/firebase/useFirestore.esm";
@@ -56,7 +59,7 @@
 				if (!allParts.value) {
 					return;
 				}
-				
+
 				const { calculatedTotal } = useCalculateTotalPercentage(allParts.value);
 				return {
 					percentage: calculatedTotal.value,
@@ -66,6 +69,7 @@
 			return {
 				totalCalculated,
 				allBoxes,
+				version,
 			};
 		},
 	};
@@ -119,7 +123,7 @@
 			height: 100%;
 		}
 	}
-	.rt-afronding{
+	.rt-afronding {
 		display: flex;
 		flex-direction: column;
 		text-align: center;
@@ -134,5 +138,13 @@
 			font-size: 0.35em;
 			opacity: 0.5;
 		}
+	}
+	.version {
+		position: absolute;
+		font-size: 12px;
+		color: #fff;
+		opacity: 0.4;
+		right: 5px;
+		bottom: 4px;
 	}
 </style>
