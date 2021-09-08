@@ -244,6 +244,7 @@
 							this.scanError = false;
 							this.errorMessage = null;
 							this.scanCount++;
+							window.navigator.vibrate([50, 20, 100]);
 						} else {
 							anime({
 								targets: ".qrscanner__item",
@@ -252,6 +253,7 @@
 								easing: "easeOutCubic",
 								background: "rgba(171, 93, 111, 1)",
 							});
+							window.navigator.vibrate([200, 20, 50]);
 							this.scanError = true;
 							this.errorMessage = "Krat bestaat niet in database";
 						}

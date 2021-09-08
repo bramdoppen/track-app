@@ -4,30 +4,12 @@
 			<div class="confirm-dialog">
 				<h4>Start code op eerste blad</h4>
 				<div class="startposition">
-					<span
-						@click="setStartPosition(1)"
-						:class="{ 's-active': startCol == 1 }"
-					></span>
-					<span
-						@click="setStartPosition(2)"
-						:class="{ 's-active': startCol == 2 }"
-					></span>
-					<span
-						@click="setStartPosition(3)"
-						:class="{ 's-active': startCol == 3 }"
-					></span>
-					<span
-						@click="setStartPosition(4)"
-						:class="{ 's-active': startCol == 4 }"
-					></span>
-					<span
-						@click="setStartPosition(5)"
-						:class="{ 's-active': startCol == 5 }"
-					></span>
-					<span
-						@click="setStartPosition(6)"
-						:class="{ 's-active': startCol == 6 }"
-					></span>
+					<span @click="setStartPosition(1)" :class="{ 's-active': startCol == 1 }"></span>
+					<span @click="setStartPosition(2)" :class="{ 's-active': startCol == 2 }"></span>
+					<span @click="setStartPosition(3)" :class="{ 's-active': startCol == 3 }"></span>
+					<span @click="setStartPosition(4)" :class="{ 's-active': startCol == 4 }"></span>
+					<span @click="setStartPosition(5)" :class="{ 's-active': startCol == 5 }"></span>
+					<span @click="setStartPosition(6)" :class="{ 's-active': startCol == 6 }"></span>
 				</div>
 				<p>
 					Let op, deze actie maakt de kratten
@@ -40,33 +22,22 @@
 		</div>
 		<div class="linelistHolder">
 			<ul class="linelist" :data-start-col="startCol" v-if="boxesPrintList && boxesPrintList.length > 0">
-				<li
-					v-for="(singleCode, index) in boxesPrintList"
-					:key="index"
-					class="printline"
-				>
+				<li v-for="(singleCode, index) in boxesPrintList" :key="index" class="printline">
 					<span class="item" v-if="singleCode">
 						<span class="kratid">{{ singleCode.id }}</span>
 						<img class="qr" :src="singleCode.imageUrl" />
 						<span class="bloemitem">
-							<span class="bloemid">{{
-								singleCode.flowerType.id
-							}}</span>
-							<span class="bloemname">{{
-								singleCode.flowerType.name
-							}}</span>
+							<span class="bloemid">{{ singleCode.flowerType.id }}</span>
+							<span class="bloemname">{{ singleCode.flowerType.name }}</span>
 						</span>
 					</span>
+					<hr />
 					<span class="item" v-if="singleCode">
 						<span class="kratid">{{ singleCode.id }}</span>
 						<img class="qr" :src="singleCode.imageUrl" />
 						<span class="bloemitem">
-							<span class="bloemid">{{
-								singleCode.flowerType.id
-							}}</span>
-							<span class="bloemname">{{
-								singleCode.flowerType.name
-							}}</span>
+							<span class="bloemid">{{ singleCode.flowerType.id }}</span>
+							<span class="bloemname">{{ singleCode.flowerType.name }}</span>
 						</span>
 					</span>
 				</li>
@@ -86,10 +57,6 @@
 		props: {
 			boxes: {
 				type: Array,
-			},
-			createInDatabase: {
-				type: Boolean,
-				default: false,
 			},
 			printStarted: {
 				type: Function,
@@ -129,14 +96,14 @@
 							this.boxesPrintList.push(box);
 						});
 						promisesList.push(createCode);
-					} else if(box) {
+					} else if (box) {
 						const freshBox = {
 							id: null,
 							flowerType: box.flowerType,
-						}
+						};
 						const createNewBox = createBox(box.flowerType)
 							.then((docRef) => {
-								freshBox.id = docRef.id
+								freshBox.id = docRef.id;
 								return this.createQR(docRef.id);
 							})
 							.then((url) => {
@@ -193,7 +160,7 @@
 		margin: 0;
 		display: none;
 		grid-template-columns: repeat(6, minmax(0, 1fr));
-		grid-column-gap: 4rem;
+		grid-column-gap: 0;
 
 		&[data-start-col="1"] > *:first-child {
 			grid-column-start: 1;
@@ -224,41 +191,57 @@
 		list-style: none;
 		width: 100%;
 		height: 100vh;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
+		display: grid;
+		grid-template-rows: 80px 1fr auto 1fr;
 		position: relative;
-    font-family: var(--font-print);
+		font-family: var(--font-print);
 
 		&::before {
-			content: "";
-			/* border-left: 1px solid gray; */
-			position: absolute;
+			content: "Plak hier";
 			top: 0;
 			left: -2rem;
+			display: flex;
 			height: 100%;
+			background: repeating-linear-gradient(45deg, rgb(0 0 0 / 5%), rgb(0 0 0 / 5%) 10px, #00000000 10px, #00000000 20px);
+			align-items: center;
+			justify-content: center;
+			text-transform: uppercase;
+			font-weight: 600;
+			font-size: 10px;
+			color: #b7b7b7;
+			border-bottom: 1px solid black;
 		}
-
+		& > hr {
+			width: 100%;
+			border-top: 0;
+			border: 0;
+			border-bottom: 1px solid #e4e4e4;
+		}
 		& > .item {
 			display: grid;
 			grid-template-areas: "id" "code" "bloemitem";
 			grid-template-columns: minmax(0, 1fr);
 			justify-items: center;
+			align-self: center;
+			margin: 0 0.5rem;
 
-			&:first-child {
+			&:last-child {
 				transform: scale(-1);
+				align-self: end;
+				padding-top: 45px;
 			}
 
 			& > .kratid {
 				grid-area: id;
 				opacity: 0.8;
-				font-weight: 900;
+				font-weight: 600;
 				font-size: 0.6em;
 			}
 
 			& > .qr {
 				grid-area: code;
 				width: 100%;
+				padding: 0 1.5rem;
 
 				& > img {
 					width: 100%;
@@ -358,11 +341,11 @@
 		html,
 		body,
 		.grid,
-    main,
+		main,
 		.creator-holder {
 			margin: 0 !important;
 			padding: 0 !important;
-      background: #fff !important;
+			background: #fff !important;
 		}
 		#app,
 		.page {
@@ -370,8 +353,9 @@
 		}
 		.grid,
 		.printconfirm,
-    .hide-on-print,
-    .page>.header, .bar-container {
+		.hide-on-print,
+		.page > .header,
+		.bar-container {
 			display: none !important;
 		}
 

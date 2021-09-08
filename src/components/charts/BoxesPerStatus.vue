@@ -69,11 +69,12 @@
 					maintainAspectRatio: false,
 					responsive: true,
 					borderWidth: 1,
+					borderColor: "#333",
 					scales: {
 						y: {
 							ticks: {
 								precision: 0,
-
+								color: "#fff",
 								font: {
 									size: 16,
 								},
@@ -81,6 +82,7 @@
 						},
 						x: {
 							ticks: {
+								color: "#fff",
 								font: {
 									size: 18,
 								},
@@ -101,19 +103,27 @@
 				chartData.data.datasets[0].backgroundColor = [];
 			}
 
-			watch(
-				() => rawBoxes.value,
-				() => {
+			function buildChart() {
+				if (rawBoxes.value && rawBoxes.value.length > 0) {
 					resetData();
 					buildKrattenInMagazijn(rawBoxes.value).forEach((item) => {
 						chartData.data.labels.push(item.name);
 						chartData.data.datasets[0].data.push(item.amount);
 						chartData.data.datasets[0].backgroundColor.push(item.flowerColor);
 					});
+					if (chartRef.value) {
+						chartRef.value.update();
+					}
+				}
+			}
 
-					chartRef.value.update();
+			watch(
+				() => rawBoxes.value,
+				() => {
+					buildChart();
 				},
 			);
+			buildChart();
 
 			return {
 				chartData,
