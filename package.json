@@ -3,7 +3,7 @@
   "version": "0.1.10",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --host localhost",
+    "serve": "vue-cli-service serve --https --host localhost",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
