@@ -2,7 +2,7 @@
 	<div>
 		<div class="printconfirm" v-if="ui.showConfirmDialog">
 			<div class="confirm-dialog">
-				<h4>Start code op eerste blad</h4>
+				<h2 style="margin-bottom: 20px;">Start code op eerste blad</h2>
 				<div class="startposition">
 					<span @click="setStartPosition(1)" :class="{ 's-active': startCol == 1 }"></span>
 					<span @click="setStartPosition(2)" :class="{ 's-active': startCol == 2 }"></span>
@@ -15,9 +15,7 @@
 					Let op, deze actie maakt de kratten
 					<u>direct</u> aan in de database.
 				</p>
-				<button class="button" @click="startPrinting">
-					Print labels
-				</button>
+				<Button title="Print labels" @click="startPrinting" />
 			</div>
 		</div>
 		<div class="linelistHolder">
@@ -48,7 +46,7 @@
 
 <script>
 	import { createBox } from "@/api/boxes.js";
-
+	import Button from "@/components/base/Button.vue"
 	import store from "@/store";
 	import QRCode from "qrcode";
 
@@ -61,6 +59,9 @@
 			printStarted: {
 				type: Function,
 			},
+		},
+		components: {
+			Button,
 		},
 		data: function() {
 			return {
@@ -129,16 +130,16 @@
 					// Start printing (with timeout, so last QR gets printed as well)
 					this.printer.timeout = setTimeout(() => {
 						this.setStartPosition(this.boxesPrintList.length + 1) % 6;
-						// window.print();
+						window.print();
 					}, 1000);
 
-					// window.addEventListener("afterprint", () => {
-					// 	// Callback (Execute only when specified)
-					// 	this.printer.isPrinting = false;
-					// 	if (this.printStarted) {
-					// 		this.printStarted();
-					// 	}
-					// });
+					window.addEventListener("afterprint", () => {
+						// Callback (Execute only when specified)
+						this.printer.isPrinting = false;
+						if (this.printStarted) {
+							this.printStarted();
+						}
+					});
 				});
 			},
 		},

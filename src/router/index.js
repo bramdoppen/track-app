@@ -111,6 +111,20 @@ const routes = [
 		],
 	},
 	{
+		path: "/targets",
+		name: "targets",
+		component: RouteRenderer,
+		meta: { requiresAuth: true },
+		children: [
+			{
+				path: "create",
+				name: "targets-create",
+				meta: { requiresAuth: true },
+				component: () => import("../layouts/targets/create/CreateTargets.vue"),
+			},			
+		],
+	},
+	{
 		path: "/parts",
 		name: "construction-parts",
 		component: RouteRenderer,

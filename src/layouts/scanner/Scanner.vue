@@ -118,7 +118,7 @@
 						// Box from part to part
 						// ----------------------
 						// prompt
-						const leftInBox = window.prompt("Hoeveel bloemen zitten er nog in de krat?");
+						const leftInBox = window.prompt(`Hoeveel bloemen zitten er nog in de krat? (${emptyBox.flowerType.name} bevat ${emptyBox.flowerType.boxAmount})`);
 						const amountFlowersUsed = parseInt(emptyBox.amountInBox - leftInBox);
 						const msg = `Krat naar ander wagenonderdeel: ${this.currConstructionPart.name} (komt van: ${boxData.belongsToConstructionPart.name}). ${amountFlowersUsed} bloemen gebruikt op ${boxData.belongsToConstructionPart.name}. Krat bevat nog ${leftInBox} bloemen.`;
 						// Weghalen bij huidig onderdeel
@@ -152,9 +152,9 @@
 						// ----------------------
 						// Box from part to storage
 						// ----------------------
-						const leftInBox = window.prompt("Hoeveel bloemen zitten er nog in de krat?");
+						const leftInBox = window.prompt(`Hoeveel bloemen zitten er nog in de krat? (${emptyBox.flowerType.name} bevat ${emptyBox.flowerType.boxAmount})`);
 						const amountFlowersUsed = parseInt(emptyBox.amountInBox - leftInBox);
-						const msg = `Krat terug naar opslag: ${toState} (komt van: ${boxData.belongsToConstructionPart.name}). ${amountFlowersUsed} bloemen gebruikt op ${boxData.belongsToConstructionPart.name}. Krat bevat nog ${leftInBox} bloemen.`;
+						const msg = `Krat terug naar opslag ('Gespijkerd'): (komt van: ${boxData.belongsToConstructionPart.name}). ${amountFlowersUsed} bloemen gebruikt op ${boxData.belongsToConstructionPart.name}. Krat bevat nog ${leftInBox} bloemen.`;
 
 						// Weghalen bij huidig onderdeel
 						db.collection("constructionParts")
@@ -175,7 +175,7 @@
 						updateBoxState(this.kratId, fromState, toState, null, leftInBox, msg);
 					} else if (toState === 5) {
 						// box is sold (weird, but can happen)
-						const leftInBox = window.prompt("Hoeveel bloemen zitten er nog in de krat?");
+						const leftInBox = window.prompt(`Hoeveel bloemen zitten er nog in de krat? (${emptyBox.flowerType.name} bevat ${emptyBox.flowerType.boxAmount})`);
 						const amountFlowersUsed = parseInt(emptyBox.amountInBox - leftInBox);
 						const msg = `Krat naar ander wagenonderdeel: ${this.currConstructionPart.name} (komt van: ${boxData.belongsToConstructionPart.name}). ${amountFlowersUsed} bloemen gebruikt op ${boxData.belongsToConstructionPart.name}. Krat bevat nog ${leftInBox} bloemen.`;
 						// Weghalen bij huidig onderdeel

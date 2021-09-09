@@ -67,6 +67,8 @@ const createBox = function(flower) {
 const updateBoxState = function(kratId, prevState, newState, constructionPart, amountLeftInBox, customMessage) {
 	const currDate = new Date();
 	const currUser = store.state.user;
+	const places = store.state.places;
+
 
 	// Get updated message
 	const getUpdatedMessage = () => {
@@ -79,7 +81,7 @@ const updateBoxState = function(kratId, prevState, newState, constructionPart, a
 				return `Bij wagenonderdeel (onbekend onderdeel)`;
 			}
 		} else {
-			return `Statuswijziging, van ${prevState} naar ${newState}`;
+			return `Statuswijziging, van ${places[prevState]} naar ${places[newState]}`;
 		}
 	};
 

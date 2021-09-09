@@ -12,6 +12,11 @@
 				<Button to="/deliveries/list" look="green" title="Bloemleveringen"></Button>
 			</Box>
 			<Box v-if="userPermissionLevel === 2">
+				<h3>Targets</h3>
+				<p>Beheer targets per uur.</p>
+				<Button to="/targets/create" look="green" title="Beheer targets"></Button>
+			</Box>
+			<Box v-if="userPermissionLevel === 2">
 				<h3>Dahlias &#127804;</h3>
 				<p>Dahliasoorten beheren</p>
 				<Button to="/flowers/list" look="green" title="Dahliasoorten"></Button>
