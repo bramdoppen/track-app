@@ -1,9 +1,9 @@
 <template>
-	<BasePage title="Onderdeel toevoegen">
+	<BasePage :title="`Onderdeel ${routeId ? 'beheren' : 'toevoegen'}`">
 		<transition name="fade" mode="out-in" appear>
 			<div v-if="!ui.loading && routeQuery.manage">
-				<h2 v-if="routeQuery.manage === 'calculated'">Berekende kratten</h2>
-				<h2 v-else>Onvoorzien/tekort kratten</h2>
+				<h2 v-if="routeQuery.manage === 'calculated'">Berekende kratten op {{constructionPart.name}}</h2>
+				<h2 v-else>Onvoorzien/tekort kratten op {{constructionPart.name}}</h2>
 				<form class="form" @submit.prevent="onAddingFlowersComplete()" style="margin-top: 20px">
 					<span style="background: red; color: #fff; padding: 15px 20px; border-radius: 5px; margin-bottom: 20px;" v-if="routeQuery.manage === 'correction' && constructionPart.magicLink && constructionPart.magicLink.id !== routeId">Let op! Er is een magische link actief. Pas de master aan.</span>
 					<span style="background: gray; color: #fff; padding: 15px 20px; border-radius: 5px; margin-bottom: 20px;" v-if="magicLinkedPartIds.length > 0">Dit onderdeel wordt door {{magicLinkedPartIds.length}} onderdelen gebruikt als magische link.</span>

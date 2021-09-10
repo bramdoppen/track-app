@@ -1,152 +1,152 @@
 <template>
 	<BasePage :title="singlePart ? singlePart.name : 'Detail onderdeel'">
-		<div class="faketable-table" v-if="singlePart">
-			<div class="box-holder">
-				<BoxListViewItem :title="`${calculatedPercentage}%`" sub="afgerond" />
-				<BoxListViewItem :title="`${singlePart.correctionTotalAmountFlowers} &#128230;`" sub="tekort" />
-			</div>
-			<div class="faketable-row">
-				<div class="faketable-head">
-					<span>Omschrijving:</span>
-				</div>
-				<div class="faketable-content">
-					<div>{{ singlePart.description }}</div>
-				</div>
-			</div>
-			<div class="faketable-row">
-				<div class="faketable-head">
-					<span>Afronding:</span>
-				</div>
-				<div class="faketable-content">
-					<div>
-						{{ calculatedPercentage }}% afgerond
-						<strong style="font-size: 12px; font-style: italic;" v-if="singlePart.correctionTotalAmountFlowers">Tekort: {{ singlePart.correctionTotalAmountFlowers }} dahlia's</strong>
+		<transition name="fade" mode="out-in" appear>
+			<div v-if="singlePart" class="container">
+				<BoxesList gap="20px">
+					<BoxesList>
+						<div class="box-holder">
+							<BoxListViewItem :title="`${calculatedPercentage}%`" sub="afgerond" />
+							<BoxListViewItem :title="`${singlePart.processedTotalAmountFlowers} &#127804;`" sub="verwerkt" />
+							<BoxListViewItem :title="`${singlePart.correctionTotalAmountFlowers} &#128230;`" sub="tekort" />
+						</div>
+						<span style="text-align: center; font-size: 0.8em; max-width: 90%; margin: 0 auto 20px;">{{ singlePart.description }}</span>
+					</BoxesList>
+					<BoxesList gap="8px">
+						<h2>Kratten</h2>
+						<span style="text-align: center; font-size: 0.8em; margin-bottom: 20px;">Overzicht geeft per dahliasoort aan hoeveel kratten besteld, binnen en al verwerkt zijn.</span>
+						<table class="tableone">
+							<tr>
+								<th>Bloem</th>
+								<th>CA</th>
+								<th style="border-right:1px solid black;">TK</th>
+								<th>AT</th>
+								<th>VW</th>
+							</tr>
+							<tr v-for="(totalTable, idx) in tables.total" :key="idx">
+								<td>{{ totalTable.flowerId }} - {{ totalTable.flowerName }}</td>
+								<td>{{ totalTable.calculated }}</td>
+								<td style="border-right:1px solid black;">{{ totalTable.correction }}</td>
+								<td>{{ totalTable.assigned }}</td>
+								<td>{{ totalTable.processed }}</td>
+							</tr>
+						</table>
+						<div style="margin-top: 10px; font-size: 10px; font-style: italic;">CA = Berekend; TK = Tekort; <br />VW = Verwerkt; AT = Kratten bij onderdeel;</div>
+						<hr style="border-color: #ddd; border-top: 0; width: 100%; margin: 10px 0;" />
+						<BoxListViewItem
+							title="Berekende kratten"
+							:sub="`${singlePart.calculatedTotalAmountBoxes} krat (${singlePart.calculatedTotalAmountFlowers} dahlia's)`"
+							:onEdit="() => onAddingFlowerChange('calculated')"
+						/>
+						<BoxListViewItem
+							title="Onvoorzien kratten"
+							:sub="`${singlePart.correctionTotalAmountBoxes} krat (${singlePart.correctionTotalAmountFlowers} dahlia's)`"
+							:onEdit="() => onAddingFlowerChange('correction')"
+						/>
+						<hr style="border-color: #ddd; border-top: 0; width: 100%; margin: 10px 0;" />
+						<BoxListViewItem
+							title="Onderdeel afgerond?"
+							:sub="singlePart.isCompleted ? 'Ja' : 'Nee'"
+							onEditText="Afronden"
+							:onEdit="() => handleCompletePart(singlePart.id)"
+						/>
+					</BoxesList>
+					<BoxesList gap="8px">
+						<h2>Toegewezen aan onderdeel ({{ singlePart.assignedBoxes.length }} &#128230;):</h2>
+						<span style="text-align: center; font-size: 0.8em; margin-bottom: 20px;">Dit zijn de kratten dit op dit moment bij dit onderdeel staan.</span>
+						<table class="tableone">
+							<tr>
+								<th style="width:0;">ID</th>
+								<th>Bloem</th>
+								<th>AIK</th>
+							</tr>
+							<tr v-for="(assigned, idx) in singlePart.assignedBoxes" :key="idx">
+								<td style="font-size:12px; font-weight:600;width:0;">{{ assigned.id }}</td>
+								<td style="font-size:12px; max-width: 100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+									{{ assigned.flowerType.id }} - {{ assigned.flowerType.name }}
+								</td>
+								<td style="font-size:12px;">{{ assigned.amountInBox }}</td>
+							</tr>
+						</table>
+
+						<div style="margin-top: 10px; font-size: 10px; font-style: italic;">AIK = Aantal bloemen nog in krat;</div>
+					</BoxesList>
+					<BoxesList gap="8px">
+						<h2>Verwerkt op onderdeel ({{ singlePart.processedBoxes.length }} &#128230;):</h2>
+						<span style="text-align: center; font-size: 0.8em; margin-bottom: 20px;">De kratten die op dit onderdeel verwerkt zijn. <br>Per krat zie je hoeveel bloemen uit die krat gebruikt zijn.</span>
+						<table class="tableone">
+							<tr>
+								<th style="width:0;">ID</th>
+								<th>Bloem</th>
+								<th>USED</th>
+							</tr>
+							<tr v-for="(processed, idx) in singlePart.processedBoxes" :key="idx">
+								<td style="font-size:12px; font-weight:600;width:0;">{{ processed.id }}</td>
+								<td style="font-size:12px; max-width: 100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+									{{ processed.flowerType.id }} - {{ processed.flowerType.name }}
+								</td>
+								<td style="font-size:12px;">{{ processed.usedFromBox }}</td>
+							</tr>
+						</table>
+
+						<div style="margin-top: 10px; font-size: 10px; font-style: italic;">USED = Aantal uit krat gebruikt op onderdeel</div>
+					</BoxesList>
+				</BoxesList>
+				<div class="faketable-table">
+					<!-- <div class="faketable-row">
+						<div class="faketable-head">
+							<span>Afronding:</span>
+						</div>
+						<div class="faketable-content">
+							<div>
+								{{ calculatedPercentage }}% afgerond
+								<strong style="font-size: 12px; font-style: italic;" v-if="singlePart.correctionTotalAmountFlowers"
+									>Tekort: {{ singlePart.correctionTotalAmountFlowers }} dahlia's</strong
+								>
+							</div>
+							<span style="font-size: 10px; font-style: italic;">Berekening: (Verwerkt / (Berekend + Tekort)) * 100</span>
+						</div>
+					</div> -->
+					
+
+					<div class="faketable-row" style="margin-top:40px">
+						<div class="faketable-head">
+							<span>Aangemaakt:</span>
+						</div>
+						<div class="faketable-content">
+							<span>{{ dayjs(singlePart.createdOn.seconds * 1000).format("ddd DD MMM YYYY, HH:mm uur") }}</span
+							><br />
+							<span>Door: {{ singlePart.createdBy.name }}</span>
+						</div>
 					</div>
-					<span style="font-size: 10px; font-style: italic;">Berekening: (Verwerkt / (Berekend + Tekort)) * 100</span>
+					<div class="faketable-row">
+						<div class="faketable-head">
+							<span>Laatste update:</span>
+						</div>
+						<div class="faketable-content" v-if="singlePart.updatedBy && singlePart.updatedOn">
+							<span>{{ dayjs(singlePart.updatedOn.seconds * 1000).format("ddd DD MMM YYYY, HH:mm uur") }}</span
+							><br />
+							<span>Door: {{ singlePart.updatedBy.name }}</span>
+						</div>
+						<div class="faketable-content" v-if="!singlePart.updatedBy || !singlePart.updatedOn">
+							<span>-</span>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="faketable-row">
-				<div class="faketable-head">
-					<span>Onderdeel afgerond?:</span>
-				</div>
-				<div class="faketable-content">
-					<div>{{ singlePart.isCompleted ? "Ja" : "Nee" }}</div>
-					<Button type="button" title="Onderdeel afronden" v-if="!singlePart.isCompleted && userPermissionLevel === 2" @click="handleCompletePart(singlePart.id)" />
-				</div>
+			<div class="loading-panel" v-else>
+				<div style="padding: 20px;">Laden...</div>
 			</div>
-			<div class="faketable-row" v-if="userPermissionLevel === 2">
-				<div class="faketable-head">
-					<span>Tekort beheren:</span>
-				</div>
-				<div class="faketable-content">
-					<Button type="button" title="Tekort beheren" />
-				</div>
-			</div>
-			<div class="faketable-row" style="margin-top:40px">
-				<div class="faketable-head">
-					<span>Kratten (Berekend: {{ singlePart.calculatedTotalAmountBoxes }} kratten):</span>
-				</div>
-				<div class="faketable-content">
-					<table class="tableone">
-						<tr>
-							<th>Bloem</th>
-							<th>CA</th>
-							<th style="border-right:1px solid black;">TK</th>
-							<th>AT</th>
-							<th>VW</th>
-						</tr>
-						<tr v-for="(totalTable, idx) in tables.total" :key="idx">
-							<td>{{ totalTable.flowerId }} - {{ totalTable.flowerName }}</td>
-							<td>{{ totalTable.calculated }}</td>
-							<td style="border-right:1px solid black;">{{ totalTable.correction }}</td>
-							<td>{{ totalTable.assigned }}</td>
-							<td>{{ totalTable.processed }}</td>
-						</tr>
-					</table>
-
-					<div style="margin-top: 10px; font-size: 10px; font-style: italic;">CA = Berekend; TK = Tekort; <br />VW = Verwerkt; AT = Kratten bij onderdeel;</div>
-				</div>
-			</div>
-			<div class="box-holder">
-				<BoxListViewItem :title="`${calculatedPercentage}%`" sub="afgerond" />
-				<BoxListViewItem :title="`${singlePart.correctionTotalAmountFlowers} &#128230;`" sub="tekort" />
-			</div>
-			<div class="faketable-row" style="margin-top:40px">
-				<div class="faketable-head">
-					<span>Kratten bij onderdeel ({{singlePart.assignedBoxes.length}}):</span>
-				</div>
-				<div class="faketable-content">
-					<table class="tableone">
-						<tr>
-							<th style="width:0;">ID</th>
-							<th>Bloem</th>
-							<th>AIK</th>
-						</tr>
-						<tr v-for="(assigned, idx) in singlePart.assignedBoxes" :key="idx">
-							<td style="font-size:12px; font-weight:600;width:0;">{{assigned.id}}</td>
-							<td style="font-size:12px; max-width: 100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{assigned.flowerType.id}} - {{assigned.flowerType.name}}</td>
-							<td style="font-size:12px;">{{assigned.amountInBox}}</td>
-						</tr>
-					</table>
-					<div style="margin-top: 10px; font-size: 10px; font-style: italic;">AIK = Aantal bloemen nog in krat;</div>
-				</div>
-			</div>
-			<div class="faketable-row" style="margin-top:40px">
-				<div class="faketable-head">
-					<span>Kratten afgerond op onderdeel ({{singlePart.processedBoxes.length}}):</span>
-				</div>
-				<div class="faketable-content">
-					<table class="tableone">
-						<tr>
-							<th style="width:0;">ID</th>
-							<th>Bloem</th>
-							<th>USED</th>
-						</tr>
-						<tr v-for="(processed, idx) in singlePart.processedBoxes" :key="idx">
-							<td style="font-size:12px; font-weight:600;width:0;">{{processed.id}}</td>
-							<td style="font-size:12px; max-width: 100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{processed.flowerType.id}} - {{processed.flowerType.name}}</td>
-							<td style="font-size:12px;">{{processed.usedFromBox}}</td>
-						</tr>
-					</table>
-					<div style="margin-top: 10px; font-size: 10px; font-style: italic;">USED = Aantal uit krat gebruikt op onderdeel</div>
-				</div>
-			</div>
-
-			<div class="faketable-row" style="margin-top:40px">
-				<div class="faketable-head">
-					<span>Aangemaakt:</span>
-				</div>
-				<div class="faketable-content">
-					<span>{{ dayjs(singlePart.createdOn.seconds * 1000).format("ddd DD MMM YYYY, HH:mm uur") }}</span
-					><br />
-					<span>Door: {{ singlePart.createdBy.name }}</span>
-				</div>
-			</div>
-			<div class="faketable-row">
-				<div class="faketable-head">
-					<span>Laatste update:</span>
-				</div>
-				<div class="faketable-content" v-if="singlePart.updatedBy && singlePart.updatedOn">
-					<span>{{ dayjs(singlePart.updatedOn.seconds * 1000).format("ddd DD MMM YYYY, HH:mm uur") }}</span
-					><br />
-					<span>Door: {{ singlePart.updatedBy.name }}</span>
-				</div>
-				<div class="faketable-content" v-if="!singlePart.updatedBy || !singlePart.updatedOn">
-					<span>-</span>
-				</div>
-			</div>
-		</div>
+		</transition>
 	</BasePage>
 </template>
 
 <script>
 	import BasePage from "@/layouts/BasePage.vue";
-	import Button from "@/components/base/Button.vue";
 	import BoxListViewItem from "@/components/base/BoxListViewItem.vue";
-
+	import BoxesList from "@/components/base/BoxesList.vue";
 	import { watch, reactive, ref, computed } from "vue";
 	import { useStore } from "vuex";
-	import { useRoute } from "vue-router";
+	import { useRoute, useRouter } from "vue-router";
 	import { db } from "@/functions/firebaseConfig.js";
 	import { completePart } from "@/api/constructionParts";
 	import usePercentageCompleted from "@/composables/usePercentageCompleted";
@@ -157,12 +157,13 @@
 	export default {
 		components: {
 			BasePage,
-			Button,
 			BoxListViewItem,
+			BoxesList,
 		},
 		setup() {
 			const store = useStore();
 			const route = useRoute();
+			const router = useRouter();
 			const routeId = route.params.id;
 
 			const tables = reactive({
@@ -251,7 +252,12 @@
 				dayjs,
 				places: store.state.places,
 				handleCompletePart: (partId) => {
-					completePart(partId);
+					if(window.confirm('Wil je dit wagenonderdeel afronden?')){
+						completePart(partId);
+					}
+				},
+				onAddingFlowerChange: (type) => {
+					router.push({ path: `/parts/edit/${singlePart.value.id}`, query: { manage: type } });
 				},
 				userPermissionLevel: computed(() => {
 					if (user.value) {
@@ -386,12 +392,42 @@
 		gap: 8px;
 
 		& :deep(.box-item) {
+			column-gap: 0;
+			row-gap: 0;
+			grid-template-columns: 1fr;
 			text-align: center;
 			padding-left: 10px;
 			padding-right: 10px;
 		}
 		& :deep(span.box-sub) {
 			font-size: 12px;
+		}
+	}
+	.container :deep(.list) > .list:not(:first-child) {
+		border-top: 1px solid #ddd;
+		padding-top: 20px;
+	}
+	h2,
+	h3 {
+		font-size: 18px;
+		text-align: center;
+	}
+	h3 {
+		font-size: 16px;
+	}
+	.light-message {
+		text-align: center;
+	}
+	.subitem {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		column-gap: 20px;
+		row-gap: 4px;
+
+		& > .label {
+			grid-column: 1 / -1;
+			align-self: start;
+			justify-self: start;
 		}
 	}
 </style>

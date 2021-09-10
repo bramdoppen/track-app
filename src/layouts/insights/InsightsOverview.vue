@@ -50,6 +50,7 @@
 								<th>Bloem</th>
 								<th style="width: 0">CA</th>
 								<th style="width: 0">IN</th>
+								<th style="width: 0">AT</th>
 								<th style="width: 0">VW</th>
 							</tr>
 							<tr v-for="(flower, idx) in allFlowers" :key="idx">
@@ -57,11 +58,12 @@
 								<td>{{ flower.name }}</td>
 								<td style="width: 0; border-left: 1px solid gray;">{{ calculateOrdered(flower) }}</td>
 								<td style="width: 0">{{ boxesPerState[flower.id] ? boxesPerState[flower.id].total : 0 }}</td>
+								<td style="width: 0">{{ boxesPerState[flower.id] ? boxesPerState[flower.id].atPart : 0 }}</td>								
 								<td style="width: 0">{{ boxesPerState[flower.id] ? boxesPerState[flower.id].processed : 0 }}</td>								
 							</tr>
 						</table>
 						<div style="padding: 20px;" v-else>Laden...</div>
-						<div style="margin-top: 10px; font-size: 10px; font-style: italic;">CA = Berekend (Besteld extern + intern + tekort); <br />IN = Geregistreerd in systeem (incl verwerkt); <br />VW = Verwerkt op wagen;</div>
+						<div style="margin-top: 10px; font-size: 10px; font-style: italic;">CA = Berekend (Besteld extern + intern + tekort); <br />IN = Geregistreerd in systeem (incl verwerkt); <br> AT = Kratten bij een onderdeel;<br />VW = Verwerkt op wagen;</div>
 						<Button to="/deliveries/list" title="Beheer leveringen" />
 					</BoxesList>
 					<BoxesList gap="8px">
@@ -161,10 +163,14 @@
 					if (!obj[box.flowerType.id]) {
 						obj[box.flowerType.id] = {
 							total: 0,
+							atPart: 0,
 							processed: 0,
 						};
 					}
 					obj[box.flowerType.id].total += 1;
+					if (box.state === 3) {
+						obj[box.flowerType.id].atPart += 1;
+					}
 					if (box.state === 4) {
 						obj[box.flowerType.id].processed += 1;
 					}
