@@ -19,6 +19,9 @@
 					</BoxesList>
 					<BoxesList gap="8px">
 						<h2 style="margin-bottom: 10px;">Wagenonderdelen</h2>
+						<div class="box-holder" style="margin-bottom: 10px;">
+							<BoxListViewItem :title="`${totalCalculated.calculatedBoxes} &#128230;`" sub="totaal berekend" />
+						</div>
 						<BoxListViewItem v-for="item in filteredParts.active" :key="item.id" :title="item.name" onEditText="Bekijk" :onEdit="() => onEdit(item)">
 							<div class="subitem">
 								<Label state="warning" class="label" v-if="calculatePercentage(item) > 95">Check voor afronding</Label>
@@ -173,8 +176,9 @@
 				if (!allParts.value) {
 					return;
 				}
-				const { calculatedTotal, correctionBoxes } = useCalculateTotalPercentage(allParts.value);
+				const { calculatedTotal, correctionBoxes, calculatedBoxes } = useCalculateTotalPercentage(allParts.value);
 				return {
+					calculatedBoxes: parseFloat(calculatedBoxes.value).toFixed(2),
 					percentage: calculatedTotal.value,
 					correctionBoxes: correctionBoxes.value,
 				};

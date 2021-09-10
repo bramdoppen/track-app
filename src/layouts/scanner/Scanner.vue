@@ -243,7 +243,6 @@
 					.then((doc) => {
 						if (doc.exists) {
 							const constructionPart = this.currConstructionPart.id ? { id: this.currConstructionPart.id, name: this.currConstructionPart.name } : null;
-							console.log(constructionPart)
 							this.handleChangeBoxData(doc, this.currAction, constructionPart);
 							this.scanError = false;
 							this.errorMessage = null;

@@ -20,8 +20,10 @@
 		<div class="realtime-list">
 			<div class="rt-box">
 				<div class="rt-afronding">
-					<h2>Indicatie afronding:</h2>
-					<span v-if="totalCalculated">{{ parseInt(totalCalculated.percentage) }}%</span>
+					<h2>Krat afgerond:</h2>
+					<span v-if="totalProcessedBoxes">{{ parseInt(totalProcessedBoxes.length) }} &#128230;</span>
+					<h2 style="margin-top: 80px;">Indicatie totale afronding:</h2>
+					<span v-if="totalCalculated">{{ parseFloat(totalCalculated.percentage).toFixed(1) }}%</span>
 				</div>
 			</div>
 		</div>
@@ -56,9 +58,17 @@
 					percentage: calculatedTotal.value,
 				};
 			});
-
+			const totalProcessedBoxes = computed(() => {
+				if (!allBoxes.value) {
+					return;
+				}
+				return allBoxes.value.filter((box) => {
+					return box.state === 4;
+				});
+			});
 			return {
 				totalCalculated,
+				totalProcessedBoxes,
 				allBoxes,
 				version,
 			};

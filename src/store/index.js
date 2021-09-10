@@ -38,7 +38,6 @@ export default createStore({
 		},
 		userPreferenceChange(state, obj) {
 			state.user.preferences[obj.type] = obj.val;
-			console.log(state.user)
 		},
 		changeStartCol(state, payload) {
 			state.printerStartCol = payload;

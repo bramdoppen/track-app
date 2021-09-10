@@ -1,6 +1,7 @@
 <template>
 	<component :is="tag" class="button" :type="compType" :class="[type, look]" :to="to" v-bind="$attrs">
 		<span>{{ title }}</span>
+		<slot></slot>
 		<Icon :icon="icon" :size="iconSize" v-if="icon" />
 	</component>
 </template>
@@ -123,6 +124,14 @@
 		&.green {
 			font-size: 18px;
 			background: var(--color-secondary);
+			padding: 5px 10px;
+			min-height: 50px;
+			border-radius: 15px;
+		}
+		
+		&.completed {
+			font-size: 18px;
+			background: var(--color-primary);
 			padding: 5px 10px;
 			min-height: 50px;
 			border-radius: 15px;

@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 export default function useCalculateTotalPercentage(_allParts) {
   const allParts = ref(_allParts);
   const calculatedFlowers = ref(0);
+  const calculatedBoxes = ref(0);
   const processedFlowers = ref(0);
   const correctionFlowers = ref(0);
   const correctionBoxes = ref(0);
@@ -10,6 +11,9 @@ export default function useCalculateTotalPercentage(_allParts) {
   allParts.value.forEach(part => {
     if(part.calculatedTotalAmountFlowers) {
       calculatedFlowers.value += parseFloat(part.calculatedTotalAmountFlowers);
+    }
+    if(part.calculatedTotalAmountBoxes) {
+      calculatedBoxes.value += parseFloat(part.calculatedTotalAmountBoxes);
     }
     if(part.processedTotalAmountFlowers) {
       processedFlowers.value += part.processedTotalAmountFlowers;
@@ -32,5 +36,6 @@ export default function useCalculateTotalPercentage(_allParts) {
     processedFlowers,
     correctionFlowers,
     correctionBoxes,
+    calculatedBoxes,
   };
 }

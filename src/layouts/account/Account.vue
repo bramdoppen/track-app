@@ -108,7 +108,7 @@
 					);
 			};
 
-			const randomQuotes = ["Tonny", "Bart", "Eric", "Emiel", "Ewald", "Daniel", "jou!"];
+			const randomQuotes = ["Tonny", "Bart", "Eric", "Emiel", "Ewald", "Daniel", "Peter", "jou!"];
 
 			return {
 				user,
