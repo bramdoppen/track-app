@@ -12,13 +12,18 @@
 				<h3>Kies een wagenonderdeel</h3>
 				<p>Hang deze krat aan een specifiek wagenonderdeel</p>
 				<BoxesList gap="8px" style="margin-top: 20px;">
-					<Button class="set-btn" v-for="(part, idx) in filteredParts.active" :key="idx" look="green" :title="part.name" @click="setConstructionPart(part.id, part.name)"
-						><div class="percentage-in-button" :style="{ '--percentage': calculatePercentage(part) + '%' }"></div
-					></Button>
+					<Button class="set-btn" 
+						v-for="(part, idx) in filteredParts.active" 
+						:key="idx" 
+						:look="part.assignedBoxes.length > 0 || part.processedTotalAmountFlowers > 0 ? 'started' : 'green'" 
+						:title="part.name" 
+						@click="setConstructionPart(part.id, part.name)">
+						<div class="percentage-in-button" :style="{ '--percentage': calculatePercentage(part) + '%' }"></div>
+					</Button>
 				</BoxesList>
 				<BoxesList gap="8px" style="margin-top: 30px;" v-if="filteredParts.completed.length > 0">
 					<strong style="text-align: center; font-size: 14px; opacity: 0.75;">Afgeronde onderdelen</strong>
-					<Button class="set-btn completed" v-for="(part, idx) in filteredParts.completed" :key="idx" look="completed" :title="part.name" @click="setConstructionPart(part.id, part.name)"
+					<Button class="set-btn started" v-for="(part, idx) in filteredParts.completed" :key="idx" look="completed" :title="part.name" @click="setConstructionPart(part.id, part.name)"
 						><div class="percentage-in-button" :style="{ '--percentage': calculatePercentage(part) + '%' }"></div
 					></Button>
 				</BoxesList>

@@ -129,9 +129,10 @@
 			border-radius: 15px;
 		}
 		
-		&.completed {
+		&.started {
 			font-size: 18px;
 			background: var(--color-primary);
+			filter: saturate(0.8);
 			padding: 5px 10px;
 			min-height: 50px;
 			border-radius: 15px;
