@@ -21,10 +21,22 @@
 				type: Number,
 				required: true,
 			},
+			darkMode: {
+				type: Boolean,
+				default: false,
+			},
+			largeFont: {
+				type: Boolean,
+				default: false,
+			},
+			horizontal: {
+				type: Boolean,
+				default: false,
+			}
 		},
 		setup(props) {
 			const chartRef = ref(null);
-			const { rawBoxes, state } = toRefs(props);
+			const { rawBoxes, state, darkMode, largeFont, horizontal } = toRefs(props);
 
 			const buildKrattenInMagazijn = (boxes) => {
 				const arr = [];
@@ -65,26 +77,26 @@
 					],
 				},
 				options: {
-					indexAxis: "x",
+					indexAxis: horizontal.value ? "y" : "x",
 					maintainAspectRatio: false,
 					responsive: true,
 					borderWidth: 1,
-					borderColor: "#333",
+					borderColor: darkMode.value ? "#333" : undefined,
 					scales: {
 						y: {
 							ticks: {
 								precision: 0,
-								color: "#fff",
+								color: darkMode.value ? "#fff" : "#000",
 								font: {
-									size: 16,
+									size: largeFont.value ? 16 : undefined,
 								},
 							},
 						},
 						x: {
 							ticks: {
-								color: "#fff",
+								color: darkMode.value ? "#fff" : "#000",
 								font: {
-									size: 18,
+									size: largeFont.value ? 18 : undefined,
 								},
 							},
 						},

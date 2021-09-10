@@ -103,6 +103,7 @@
 					});
 			},
 			handleChangeBoxData(doc, toState, constructionPart) {
+				debugger;
 				const fromState = doc.data().state;
 				const boxData = doc.data();
 				const customMessage = this.sellReason ? "Verkocht. Reden verkoop: " + this.sellReason : null;
@@ -199,6 +200,7 @@
 					} else {
 						// Box from part to completed
 						// Wanneer afgerond op wagenonderdeel -> plaats box in Processed boxes (en haal hem weg bij Assigned);
+
 						db.collection("constructionParts")
 							.doc(boxData.belongsToConstructionPart.id)
 							.update({
@@ -227,7 +229,6 @@
 							.doc(this.currConstructionPart.id)
 							.update({
 								assignedBoxes: fb.firestore.FieldValue.arrayUnion(emptyBox),
-								processedBoxes: fb.firestore.FieldValue.arrayRemove(emptyBox),
 							});
 					}
 				}
@@ -242,6 +243,7 @@
 					.then((doc) => {
 						if (doc.exists) {
 							const constructionPart = this.currConstructionPart.id ? { id: this.currConstructionPart.id, name: this.currConstructionPart.name } : null;
+							console.log(constructionPart)
 							this.handleChangeBoxData(doc, this.currAction, constructionPart);
 							this.scanError = false;
 							this.errorMessage = null;
@@ -261,7 +263,7 @@
 						}
 					})
 					.catch((error) => {
-						(this.errorMessage = "Error:"), error;
+						this.errorMessage = `Error: ${error}`;
 					})
 					.finally(() => {
 						this.isProcessing = false;
@@ -277,7 +279,7 @@
 				this.$router.go(-1);
 			},
 			playSuccess() {
-				if (store.state.user.preferences && store.state.user.preferences.allowHaptics) {
+				if (store.state.user.preferences && store.state.user.preferences.allowHaptics && window.navigator && window.navigator.vibrate) {
 					window.navigator.vibrate([50, 20, 100]);
 				}
 				if (store.state.user.preferences && store.state.user.preferences.allowSound) {
@@ -286,7 +288,7 @@
 				}
 			},
 			playError() {
-				if (store.state.user.preferences && store.state.user.preferences.allowHaptics) {
+				if (store.state.user.preferences && store.state.user.preferences.allowHaptics && window.navigator && window.navigator.vibrate) {
 					window.navigator.vibrate([200, 20, 50]);
 				}
 				if (store.state.user.preferences && store.state.user.preferences.allowSound) {

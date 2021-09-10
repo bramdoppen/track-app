@@ -54,6 +54,7 @@
       const store = useStore();
       const randomQuotes = [
         "wat zit jouw haar leuk!",
+        "wat een leuk t-shirt heb je aan!",
         "zoals jij kratten scant, zo scant geen ander ze!",
         "glad to have you back.",
       ];

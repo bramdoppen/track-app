@@ -33,7 +33,7 @@ const createBox = function(flower) {
 	const currDate = new Date();
 	const currGroup = store.state.corsoGroup || store.state.user.corsoGroup;
 	return db.collection("boxes").add({
-		state: 0,
+		state: null,
 		amountInBox: flower.boxAmount,
 		flowerType: flower,
 		belongsToConstructionPart: null,
@@ -46,14 +46,17 @@ const createBox = function(flower) {
 			id: currUser.uid,
 			name: currUser.displayName,
 		},
-		updatedOn: null,
-		updatedBy: null,
+		updatedOn: currDate,
+		updatedBy: {
+			id: currUser.uid,
+			name: currUser.displayName,
+		},
 		updateLog: [
 			{
 				id: 1,
-				message: "Created",
-				fromState: 0,
-				toState: 0,
+				message: "Label aangemaakt",
+				fromState: null,
+				toState: null,
 				updatedOn: currDate,
 				updatedBy: {
 					id: currUser.uid,
@@ -80,6 +83,8 @@ const updateBoxState = function(kratId, prevState, newState, constructionPart, a
 			} else {
 				return `Bij wagenonderdeel (onbekend onderdeel)`;
 			}
+		} else if(prevState === null) {
+			return `Statuswijziging, van "Label aangemaakt" naar ${places[newState]}`;
 		} else {
 			return `Statuswijziging, van ${places[prevState]} naar ${places[newState]}`;
 		}

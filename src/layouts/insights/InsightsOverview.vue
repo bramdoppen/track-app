@@ -23,7 +23,7 @@
 							<div class="subitem">
 								<Label state="warning" class="label" v-if="calculatePercentage(item) > 95">Check voor afronding</Label>
 								<span>{{ calculatePercentage(item) }}% afgerond</span>
-								<span v-if="item.correctionTotalAmountBoxes">{{ item.correctionTotalAmountBoxes }} tekort</span>
+								<span v-if="item.correctionTotalAmountBoxes && item.correctionTotalAmountBoxes > 0">{{ item.correctionTotalAmountBoxes }} tekort</span>
 							</div>
 						</BoxListViewItem>
 					</BoxesList>
@@ -33,7 +33,7 @@
 							<div class="subitem">
 								<Label state="warning" class="label" v-if="calculatePercentage(item) > 95">Check voor afronding</Label>
 								<span>{{ calculatePercentage(item) }}% afgerond</span>
-								<span v-if="item.correctionTotalAmountBoxes">{{ item.correctionTotalAmountBoxes }} tekort</span>
+								<span v-if="item.correctionTotalAmountBoxes && item.correctionTotalAmountBoxes > 0">{{ item.correctionTotalAmountBoxes }} tekort</span>
 							</div>
 						</BoxListViewItem>
 					</BoxesList>
@@ -59,6 +59,17 @@
 						</table>
 						<div style="padding: 20px;" v-else>Laden...</div>
 						<div style="margin-top: 10px; font-size: 10px; font-style: italic;">CA = Berekend (Besteld extern + intern + tekort); <br />IN = Geregistreerd in systeem (incl verwerkt); <br />VW = Verwerkt op wagen;</div>
+						<Button to="/deliveries/list" title="Beheer leveringen" />
+					</BoxesList>
+					<BoxesList gap="8px">
+						<h2>Gespijkerde kratten</h2>
+						<span style="text-align: center; font-size: 0.8em; margin-bottom: 20px;">Deze kratten zijn klaar om op de wagen te gaan.</span>
+						<Box style="padding:15px">
+							<div class="chart-holder">
+								<BoxesPerStatus :rawBoxes="allBoxes" :state="2" :horizontal="true"></BoxesPerStatus>
+							</div>
+
+						</Box>
 					</BoxesList>
 				</BoxesList>
 			</div>
@@ -73,9 +84,12 @@
 	import { computed } from "vue";
 	import BasePage from "@/layouts/BasePage.vue";
 	import BoxListViewItem from "@/components/base/BoxListViewItem.vue";
+	import Box from "@/components/base/Box.vue";
 	import Label from "@/components/base/Label.vue";
 
 	import BoxesList from "@/components/base/BoxesList.vue";
+	import BoxesPerStatus from "@/components/charts/BoxesPerStatus.vue";
+	import Button from "@/components/base/Button.vue";
 
 	import { useStore } from "vuex";
 	import { useRouter } from "vue-router";
@@ -89,6 +103,9 @@
 		components: {
 			BasePage,
 			BoxListViewItem,
+			Box,
+			Button,
+			BoxesPerStatus,
 			BoxesList,
 			Label,
 		},
@@ -96,7 +113,7 @@
 			const store = useStore();
 			const router = useRouter();
 
-			const allBoxes = useFirestore(db.collection("boxes").where("state", "<", 5));
+			const allBoxes = useFirestore(db.collection("boxes").where("state", "!=", null).where("state", "<", 5));
 			const allFlowers = useFirestore(db.collection("flowerTypes"));
 			const allParts = useFirestore(db.collection("constructionParts"));
 

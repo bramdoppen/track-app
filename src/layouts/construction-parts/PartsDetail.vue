@@ -42,7 +42,7 @@
 					<Button type="button" title="Tekort beheren" />
 				</div>
 			</div>
-			<div class="faketable-row">
+			<div class="faketable-row" style="margin-top:40px">
 				<div class="faketable-head">
 					<span>Kratten (Berekend: {{ singlePart.calculatedTotalAmountBoxes }} kratten):</span>
 				</div>
@@ -67,8 +67,52 @@
 					<div style="margin-top: 10px; font-size: 10px; font-style: italic;">CA = Berekend; TK = Tekort; <br />VW = Verwerkt; AT = Kratten bij onderdeel;</div>
 				</div>
 			</div>
+			<div class="box-holder">
+				<BoxListViewItem :title="`${calculatedPercentage}%`" sub="afgerond" />
+				<BoxListViewItem :title="`${singlePart.correctionTotalAmountFlowers} &#128230;`" sub="tekort" />
+			</div>
+			<div class="faketable-row" style="margin-top:40px">
+				<div class="faketable-head">
+					<span>Kratten bij onderdeel ({{singlePart.assignedBoxes.length}}):</span>
+				</div>
+				<div class="faketable-content">
+					<table class="tableone">
+						<tr>
+							<th style="width:0;">ID</th>
+							<th>Bloem</th>
+							<th>AIK</th>
+						</tr>
+						<tr v-for="(assigned, idx) in singlePart.assignedBoxes" :key="idx">
+							<td style="font-size:12px; font-weight:600;width:0;">{{assigned.id}}</td>
+							<td style="font-size:12px; max-width: 100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{assigned.flowerType.id}} - {{assigned.flowerType.name}}</td>
+							<td style="font-size:12px;">{{assigned.amountInBox}}</td>
+						</tr>
+					</table>
+					<div style="margin-top: 10px; font-size: 10px; font-style: italic;">AIK = Aantal bloemen nog in krat;</div>
+				</div>
+			</div>
+			<div class="faketable-row" style="margin-top:40px">
+				<div class="faketable-head">
+					<span>Kratten afgerond op onderdeel ({{singlePart.processedBoxes.length}}):</span>
+				</div>
+				<div class="faketable-content">
+					<table class="tableone">
+						<tr>
+							<th style="width:0;">ID</th>
+							<th>Bloem</th>
+							<th>USED</th>
+						</tr>
+						<tr v-for="(processed, idx) in singlePart.processedBoxes" :key="idx">
+							<td style="font-size:12px; font-weight:600;width:0;">{{processed.id}}</td>
+							<td style="font-size:12px; max-width: 100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{processed.flowerType.id}} - {{processed.flowerType.name}}</td>
+							<td style="font-size:12px;">{{processed.usedFromBox}}</td>
+						</tr>
+					</table>
+					<div style="margin-top: 10px; font-size: 10px; font-style: italic;">USED = Aantal uit krat gebruikt op onderdeel</div>
+				</div>
+			</div>
 
-			<div class="faketable-row">
+			<div class="faketable-row" style="margin-top:40px">
 				<div class="faketable-head">
 					<span>Aangemaakt:</span>
 				</div>

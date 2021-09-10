@@ -1,5 +1,5 @@
 <template>
-	<BasePage title="Alle Dahlia's">
+	<BasePage title="Leveringen">
 		<transition name="fade" mode="out-in" appear>
 			<BoxesList gap="8px" v-if="allDeliveries">
 				<transition-group name="trans-list">

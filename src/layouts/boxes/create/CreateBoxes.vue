@@ -80,6 +80,7 @@
 			function startPrint() {
 				showPrinter.value = true;
 				createBoxesArray();
+				
 				window.addEventListener(
 					"keyup",
 					(e) => {

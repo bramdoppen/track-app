@@ -11,11 +11,11 @@
 				<p>Beheer verwachtte bloemleveringen (extern, intern en tekorten).</p>
 				<Button to="/deliveries/list" look="green" title="Bloemleveringen"></Button>
 			</Box>
-			<Box v-if="userPermissionLevel === 2">
+			<!-- <Box v-if="userPermissionLevel === 2">
 				<h3>Targets</h3>
 				<p>Beheer targets per uur.</p>
 				<Button to="/targets/create" look="green" title="Beheer targets"></Button>
-			</Box>
+			</Box> -->
 			<Box v-if="userPermissionLevel === 2">
 				<h3>Dahlias &#127804;</h3>
 				<p>Dahliasoorten beheren</p>

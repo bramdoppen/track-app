@@ -4,25 +4,16 @@
 			<div class="rt-box">
 				<h2>In Magazijn</h2>
 				<div class="rt-box-chart" v-if="allBoxes && allBoxes.length > 0">
-					<BoxesPerStatus :rawBoxes="allBoxes" :state="0"></BoxesPerStatus>
+					<BoxesPerStatus :rawBoxes="allBoxes" :state="0" :darkMode="true" :largeFont="true"></BoxesPerStatus>
 				</div>
 			</div>
 		</div>
 
 		<div class="realtime-tile">
 			<div class="rt-box">
-				<h2>Op spijkertafel</h2>
+				<h2>Gespijkerd en klaar voor steiger</h2>
 				<div class="rt-box-chart">
-					<BoxesPerStatus :rawBoxes="allBoxes" :state="1"></BoxesPerStatus>
-				</div>
-			</div>
-		</div>
-
-		<div class="realtime-tile">
-			<div class="rt-box">
-				<h2>Gespijkerd</h2>
-				<div class="rt-box-chart">
-					<BoxesPerStatus :rawBoxes="allBoxes" :state="2"></BoxesPerStatus>
+					<BoxesPerStatus :rawBoxes="allBoxes" :state="2" :darkMode="true" :largeFont="true"></BoxesPerStatus>
 				</div>
 			</div>
 		</div>
@@ -88,14 +79,14 @@
 		background: var(--bg);
 		color: var(--fg);
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-columns: minmax(0, 1fr) 500px;
 		grid-template-rows: 1fr 1fr;
 		gap: 20px;
 		padding: 20px;
 		height: 100%;
 	}
 	h2 {
-		font-size: clamp(18px, 2vw, 26px);
+		font-size: clamp(18px, 2vw, 36px);
 		margin: 0;
 		margin-top: 10px;
 		margin-bottom: 20px;
@@ -104,7 +95,7 @@
 	}
 	.realtime-list {
 		grid-column: 2;
-		grid-row: 1;
+		grid-row: 1 / -1;
 	}
 	.rt-box {
 		background: var(--box-bg);
