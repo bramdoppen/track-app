@@ -7,7 +7,7 @@
 						<div class="box-holder">
 							<BoxListViewItem :title="`${totalProcessedBoxes.length}  &#128230;`" sub="verwerkt" />
 							<BoxListViewItem :title="`${totalCalculated.percentage}%`" sub="afgerond" />
-							<BoxListViewItem :title="`${totalCalculated.correctionBoxes} &#128230;`" sub="tekort" />
+							<BoxListViewItem :title="`${totalCalculated.correctionBoxes.toFixed(1)} &#128230;`" sub="tekort" />
 						</div>
 					</BoxesList>
 					<BoxesList gap="8px">
@@ -34,7 +34,6 @@
 						<h3 style="margin-bottom: 10px;">Afgeronde onderdelen</h3>
 						<BoxListViewItem v-for="item in filteredParts.completed" :key="item.id" :title="item.name" onEditText="Bekijk" :onEdit="() => onEdit(item)">
 							<div class="subitem">
-								<Label state="warning" class="label" v-if="calculatePercentage(item) > 95">Check voor afronding</Label>
 								<span>{{ calculatePercentage(item) }}% afgerond</span>
 								<span v-if="item.correctionTotalAmountBoxes && item.correctionTotalAmountBoxes > 0">{{ item.correctionTotalAmountBoxes }} tekort</span>
 							</div>
@@ -48,18 +47,20 @@
 							<tr>
 								<th style="width: 0">#</th>
 								<th>Bloem</th>
-								<th style="width: 0">CA</th>
-								<th style="width: 0">IN</th>
-								<th style="width: 0">AT</th>
-								<th style="width: 0">VW</th>
+								<th style="width: 0;padding:4px;">BS</th>
+								<th style="width: 0;padding:4px;">CA</th>
+								<th style="width: 0;padding:4px;">IN</th>
+								<th style="width: 0;padding:4px;">AT</th>
+								<th style="width: 0;padding:4px;">VW</th>
 							</tr>
 							<tr v-for="(flower, idx) in allFlowers" :key="idx">
 								<td style="width: 0">{{ flower.id }}</td>
 								<td>{{ flower.name }}</td>
-								<td style="width: 0; border-left: 1px solid gray;">{{ calculateOrdered(flower) }}</td>
-								<td style="width: 0">{{ boxesPerState[flower.id] ? boxesPerState[flower.id].total : 0 }}</td>
-								<td style="width: 0">{{ boxesPerState[flower.id] ? boxesPerState[flower.id].atPart : 0 }}</td>								
-								<td style="width: 0">{{ boxesPerState[flower.id] ? boxesPerState[flower.id].processed : 0 }}</td>								
+								<td style="width: 0;padding:4px;; border-left: 1px solid gray;">{{ calculateOrdered(flower) }}</td>
+								<td style="width: 0;padding:4px;">-</td>
+								<td style="width: 0;padding:4px;">{{ boxesPerState[flower.id] ? boxesPerState[flower.id].total : 0 }}</td>
+								<td style="width: 0;padding:4px;">{{ boxesPerState[flower.id] ? boxesPerState[flower.id].atPart : 0 }}</td>								
+								<td style="width: 0;padding:4px;">{{ boxesPerState[flower.id] ? boxesPerState[flower.id].processed : 0 }}</td>								
 							</tr>
 						</table>
 						<div style="padding: 20px;" v-else>Laden...</div>
@@ -70,10 +71,9 @@
 						<h2>Gespijkerde kratten</h2>
 						<span style="text-align: center; font-size: 0.8em; margin-bottom: 20px;">Deze kratten zijn klaar om op de wagen te gaan.</span>
 						<Box style="padding:15px">
-							<div class="chart-holder">
-								<BoxesPerStatus :rawBoxes="allBoxes" :state="2" :horizontal="true"></BoxesPerStatus>
+							<div class="chart-holder" >
+								<BoxesPerStatus :rawBoxes="allBoxes" :state="2" :horizontal="true" style="height: 300px;"></BoxesPerStatus>
 							</div>
-
 						</Box>
 					</BoxesList>
 				</BoxesList>
@@ -217,10 +217,6 @@
 					return external + internal + correction;
 				}
 			};
-
-			
-
-
 
 			return {
 				allBoxes,

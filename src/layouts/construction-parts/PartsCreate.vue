@@ -259,7 +259,7 @@
 						if (val) {
 							boxes += parseFloat(val);
 							flowers += parseInt(val * flower.boxAmount);
-							if (val > 0) {
+							if (val !== 0) {
 								boxesArr.push({
 									id: flowerId,
 									name: flower.name,

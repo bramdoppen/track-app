@@ -50,6 +50,14 @@
 					if (box.state === state.value) {
 						if (existsAtIndex == -1) {
 							const flowerColor = box.flowerType.colorHex || "#000";
+							// const amount = () => {
+							// 	console.log(box)
+							// 	if(box.amountInBox) {
+							// 		return box.amountInBox / box.flowerType.boxAmount
+							// 	} else {
+							// 		return 1;
+							// 	}
+							// }
 							arr.push({
 								name: box.flowerType.name,
 								flowerColor: flowerColor,

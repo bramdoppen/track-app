@@ -8,16 +8,25 @@
 					<Button v-for="(place, idx) in places" :key="idx" look="green" :title="place" @click="setPlace(idx)"></Button>
 				</BoxesList>
 			</Box>
+			<Box v-if="place != 3">
+				<h3>Batch scan secundaire plekken</h3>
+				<p>Kies een locatie om één of meerdere kratten in te checken.</p>
+				<BoxesList gap="12px" style="margin-top: 20px;">
+					<Button v-for="(place, idx) in secondaryPlaces" :key="idx" look="green" :title="place" @click="setPlace(idx)"></Button>
+				</BoxesList>
+			</Box>
 			<Box v-if="place == 3">
 				<h3>Kies een wagenonderdeel</h3>
 				<p>Hang deze krat aan een specifiek wagenonderdeel</p>
 				<BoxesList gap="8px" style="margin-top: 20px;">
-					<Button class="set-btn" 
-						v-for="(part, idx) in filteredParts.active" 
-						:key="idx" 
-						:look="part.assignedBoxes.length > 0 || part.processedTotalAmountFlowers > 0 ? 'started' : 'green'" 
-						:title="part.name" 
-						@click="setConstructionPart(part.id, part.name)">
+					<Button
+						class="set-btn"
+						v-for="(part, idx) in filteredParts.active"
+						:key="idx"
+						:look="part.assignedBoxes.length > 0 || part.processedTotalAmountFlowers > 0 ? 'started' : 'green'"
+						:title="part.name"
+						@click="setConstructionPart(part.id, part.name)"
+					>
 						<div class="percentage-in-button" :style="{ '--percentage': calculatePercentage(part) + '%' }"></div>
 					</Button>
 				</BoxesList>
@@ -70,8 +79,23 @@
 				store.commit("changeConstructionPart", { id: id, name: name });
 				router.push("/boxes/scan");
 			}
-			const places = computed(() => store.state.places);
-			delete places.value[6];
+			const places = computed(() => {
+				const _places = {...store.state.places}
+				delete _places[5]
+				delete _places[6]
+				delete _places[7]
+				return _places
+			});
+			const secondaryPlaces = computed(() => {
+				const _places = {...store.state.places}
+				delete _places[0]
+				delete _places[1]
+				delete _places[2]
+				delete _places[3]
+				delete _places[4]
+				delete _places[6]
+				return _places
+			});
 
 			function calculatePercentage(item) {
 				const { calculatedPercentage } = usePercentageCompleted(item);
@@ -97,6 +121,7 @@
 			return {
 				place: _place,
 				places,
+				secondaryPlaces,
 				filteredParts,
 				setPlace,
 				setConstructionPart,

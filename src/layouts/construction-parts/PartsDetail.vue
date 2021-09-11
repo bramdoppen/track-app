@@ -7,7 +7,7 @@
 						<div class="box-holder">
 							<BoxListViewItem :title="`${calculatedPercentage}%`" sub="afgerond" />
 							<BoxListViewItem :title="`${singlePart.processedTotalAmountFlowers} &#127804;`" sub="verwerkt" />
-							<BoxListViewItem :title="`${singlePart.correctionTotalAmountFlowers} &#128230;`" sub="tekort" />
+							<BoxListViewItem :title="`${singlePart.correctionTotalAmountBoxes} &#128230;`" sub="tekort" />
 						</div>
 						<span style="text-align: center; font-size: 0.8em; max-width: 90%; margin: 0 auto 20px;">{{ singlePart.description }}</span>
 					</BoxesList>
@@ -27,10 +27,14 @@
 								<td>{{ totalTable.calculated }}</td>
 								<td style="border-right:1px solid black;">{{ totalTable.correction }}</td>
 								<td>{{ totalTable.assigned }}</td>
-								<td>{{ totalTable.processed }}</td>
+								<td>{{ totalTable.processed.toFixed(1) }}</td>
 							</tr>
 						</table>
-						<div style="margin-top: 10px; font-size: 10px; font-style: italic;">CA = Berekend; TK = Tekort; <br />VW = Verwerkt; AT = Kratten bij onderdeel;</div>
+
+						<div style="margin-top: 10px; font-size: 10px; font-style: italic;">
+							CA = Berekend;<br />
+							TK = Tekort; <br />AT = Kratten bij onderdeel; <br />VW = Verwerkte aantal kratten (aant. bloemen uit krat gebruikt);
+						</div>
 						<hr style="border-color: #ddd; border-top: 0; width: 100%; margin: 10px 0;" />
 						<BoxListViewItem
 							title="Berekende kratten"
@@ -43,12 +47,7 @@
 							:onEdit="() => onAddingFlowerChange('correction')"
 						/>
 						<hr style="border-color: #ddd; border-top: 0; width: 100%; margin: 10px 0;" />
-						<BoxListViewItem
-							title="Onderdeel afgerond?"
-							:sub="singlePart.isCompleted ? 'Ja' : 'Nee'"
-							onEditText="Afronden"
-							:onEdit="() => handleCompletePart(singlePart.id)"
-						/>
+						<BoxListViewItem title="Onderdeel afgerond?" :sub="singlePart.isCompleted ? 'Ja' : 'Nee'" onEditText="Afronden" :onEdit="() => handleCompletePart(singlePart.id)" />
 					</BoxesList>
 					<BoxesList gap="8px">
 						<h2>Toegewezen aan onderdeel ({{ singlePart.assignedBoxes.length }} &#128230;):</h2>
@@ -60,9 +59,13 @@
 								<th>AIK</th>
 							</tr>
 							<tr v-for="(assigned, idx) in singlePart.assignedBoxes" :key="idx">
-								<td style="font-size:12px; font-weight:600;width:0;">{{ assigned.id }}</td>
+								<td style="font-size:12px; font-weight:600;width:0;">
+									<router-link :to="`/boxes/detail/${assigned.id}`" style="color:inherit;">{{ assigned.id }}</router-link>
+								</td>
 								<td style="font-size:12px; max-width: 100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-									{{ assigned.flowerType.id }} - {{ assigned.flowerType.name }}
+									<div style="display: flex; align-items: center;">
+										<span class="color-bol" :style="{ background: assigned.flowerType.colorHex }"></span>{{ assigned.flowerType.id }} - {{ assigned.flowerType.name }}
+									</div>
 								</td>
 								<td style="font-size:12px;">{{ assigned.amountInBox }}</td>
 							</tr>
@@ -72,7 +75,9 @@
 					</BoxesList>
 					<BoxesList gap="8px">
 						<h2>Verwerkt op onderdeel ({{ singlePart.processedBoxes.length }} &#128230;):</h2>
-						<span style="text-align: center; font-size: 0.8em; margin-bottom: 20px;">De kratten die op dit onderdeel verwerkt zijn. <br>Per krat zie je hoeveel bloemen uit die krat gebruikt zijn.</span>
+						<span style="text-align: center; font-size: 0.8em; margin-bottom: 20px;"
+							>De kratten die op dit onderdeel verwerkt zijn. <br />Per krat zie je hoeveel bloemen uit die krat gebruikt zijn.</span
+						>
 						<table class="tableone">
 							<tr>
 								<th style="width:0;">ID</th>
@@ -80,19 +85,25 @@
 								<th>USED</th>
 							</tr>
 							<tr v-for="(processed, idx) in singlePart.processedBoxes" :key="idx">
-								<td style="font-size:12px; font-weight:600;width:0;">{{ processed.id }}</td>
-								<td style="font-size:12px; max-width: 100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-									{{ processed.flowerType.id }} - {{ processed.flowerType.name }}
+								<td style="font-size:12px; font-weight:600;width:0;">
+									<router-link :to="`/boxes/detail/${processed.id}`" style="color:inherit;">{{ processed.id }}</router-link>
 								</td>
-								<td style="font-size:12px;">{{ processed.usedFromBox }}</td>
+								<td style="font-size:12px; max-width: 100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+									<div style="display: flex; align-items: center;">
+										<span class="color-bol" :style="{ background: processed.flowerType.colorHex }"></span>{{ processed.flowerType.id }} - {{ processed.flowerType.name }}
+									</div>
+								</td>
+								<td style="font-size:12px;">
+									<span :style="{ 'font-weight': processed.usedFromBox !== processed.flowerType.boxAmount ? '600' : ' 400' }">{{ processed.usedFromBox }} </span>
+								</td>
 							</tr>
 						</table>
 
 						<div style="margin-top: 10px; font-size: 10px; font-style: italic;">USED = Aantal uit krat gebruikt op onderdeel</div>
 					</BoxesList>
 				</BoxesList>
-				<div class="faketable-table">
-					<!-- <div class="faketable-row">
+				<div class="faketable-table" style="margin-top:40px">
+					<div class="faketable-row">
 						<div class="faketable-head">
 							<span>Afronding:</span>
 						</div>
@@ -105,10 +116,8 @@
 							</div>
 							<span style="font-size: 10px; font-style: italic;">Berekening: (Verwerkt / (Berekend + Tekort)) * 100</span>
 						</div>
-					</div> -->
-					
-
-					<div class="faketable-row" style="margin-top:40px">
+					</div>
+					<div class="faketable-row">
 						<div class="faketable-head">
 							<span>Aangemaakt:</span>
 						</div>
@@ -187,7 +196,7 @@
 							flowerName: box.flowerType.name,
 						};
 						if (idx >= 0) {
-							tables.total[idx].assigned += 1;
+							tables.total[idx].assigned += box.amountInBox / box.flowerType.boxAmount;
 						} else {
 							tables.total.push(emptyObj);
 						}
@@ -235,7 +244,7 @@
 							flowerName: box.flowerType.name,
 						};
 						if (idx >= 0) {
-							tables.total[idx].processed += 1;
+							tables.total[idx].processed += box.usedFromBox / box.flowerType.boxAmount;
 						} else {
 							tables.total.push(emptyObj);
 						}
@@ -252,7 +261,7 @@
 				dayjs,
 				places: store.state.places,
 				handleCompletePart: (partId) => {
-					if(window.confirm('Wil je dit wagenonderdeel afronden?')){
+					if (window.confirm("Wil je dit wagenonderdeel afronden?")) {
 						completePart(partId);
 					}
 				},
@@ -429,5 +438,14 @@
 			align-self: start;
 			justify-self: start;
 		}
+	}
+	.color-bol {
+		width: 10px;
+		height: 10px;
+		flex: 0 0 auto;
+		border: 1px solid gray;
+		display: block;
+		margin-right: 6px;
+		border-radius: 50%;
 	}
 </style>

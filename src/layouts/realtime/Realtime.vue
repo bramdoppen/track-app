@@ -18,7 +18,13 @@
 			</div>
 		</div>
 		<div class="realtime-list">
-			<div class="rt-box">
+			<div class="rt-box" v-if="routeQuery.screen === 'magazijn'">
+				<h2>Op spijkertafel</h2>
+				<div class="rt-box-chart">
+					<BoxesPerStatus :rawBoxes="allBoxes" :state="1" :horizontal="true" :darkMode="true" :largeFont="true"></BoxesPerStatus>
+				</div>
+			</div>
+			<div class="rt-box" v-else>
 				<div class="rt-afronding">
 					<h2>Krat afgerond:</h2>
 					<span v-if="totalProcessedBoxes">{{ parseInt(totalProcessedBoxes.length) }} &#128230;</span>
@@ -36,6 +42,7 @@
 
 	import { db } from "@/functions/firebaseConfig.js";
 	import { computed } from "vue";
+	import { useRoute } from "vue-router";
 	import { useFirestore } from "@vueuse/firebase/useFirestore.esm";
 	import BoxesPerStatus from "@/components/charts/BoxesPerStatus.vue";
 	import useCalculateTotalPercentage from "@/composables/useCalculateTotalPercentage";
@@ -45,6 +52,8 @@
 			BoxesPerStatus,
 		},
 		setup() {
+			const route = useRoute();
+			const routeQuery = computed(() => route.query);
 			const allBoxes = useFirestore(db.collection("boxes"));
 			const allParts = useFirestore(db.collection("constructionParts"));
 
@@ -71,6 +80,7 @@
 				totalProcessedBoxes,
 				allBoxes,
 				version,
+				routeQuery,
 			};
 		},
 	};
