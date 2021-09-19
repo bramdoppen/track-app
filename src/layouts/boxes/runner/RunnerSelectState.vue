@@ -83,7 +83,6 @@
 				const _places = {...store.state.places}
 				delete _places[5]
 				delete _places[6]
-				delete _places[7]
 				return _places
 			});
 			const secondaryPlaces = computed(() => {

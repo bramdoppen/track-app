@@ -67,6 +67,42 @@ const createBox = function(flower) {
 	});
 };
 
+const updateFlowerType = function(kratId, fromType, newType) {
+	const currDate = new Date();
+	const currUser = store.state.user;
+
+	// Build update message
+	const newUpdate = {
+		message: `Bloemtype veranderd. Van ${fromType.name} naar ${newType.name}`,
+		updatedOn: currDate,
+		updatedBy: {
+			id: currUser.uid,
+			name: currUser.displayName,
+		},
+	};
+	
+	const updatedFields = {
+		flowerType: {
+			id:	newType.id,
+			name:	newType.name,
+			boxAmount:	newType.boxAmount,
+			colorHex:	newType.colorHex,
+		},
+		updatedOn: currDate,
+		updatedBy: {
+			id: currUser.uid,
+			name: currUser.displayName,
+		},
+		updateLog: fb.firestore.FieldValue.arrayUnion(newUpdate),
+	}
+
+	return db
+		.collection("boxes")
+		.doc(kratId)
+		.update(updatedFields);
+}
+
+
 const updateBoxState = function(kratId, prevState, newState, constructionPart, amountLeftInBox, customMessage) {
 	const currDate = new Date();
 	const currUser = store.state.user;
@@ -136,4 +172,4 @@ const updateBoxState = function(kratId, prevState, newState, constructionPart, a
 		.doc(kratId)
 		.update(updatedFields);
 };
-export { createBox, updateBoxState, fetchAllBoxes, fetchSingleBox};
+export { createBox, updateBoxState, fetchAllBoxes, fetchSingleBox, updateFlowerType};

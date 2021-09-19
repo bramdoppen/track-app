@@ -118,7 +118,7 @@
 			const store = useStore();
 			const router = useRouter();
 
-			const allBoxes = useFirestore(db.collection("boxes").where("state", "!=", null).where("state", "<", 5));
+			const allBoxes = useFirestore(db.collection("boxes").where("state", "!=", null).where("state", "<=", 5));
 			const allFlowers = useFirestore(db.collection("flowerTypes"));
 			const allParts = useFirestore(db.collection("constructionParts"));
 

@@ -17,15 +17,16 @@
 					<span>Krat-ID:</span>
 				</div>
 				<div class="faketable-content">
-					<div>{{ boxId }} </div>
+					<div>{{ boxId }}</div>
 				</div>
 			</div>
+			
 			<div class="faketable-row">
 				<div class="faketable-head">
 					<span>Bloemen in krat:</span>
 				</div>
 				<div class="faketable-content">
-					<div>{{ data.amountInBox }} </div>
+					<div>{{ data.amountInBox }}</div>
 				</div>
 			</div>
 			<div class="faketable-row">
@@ -51,6 +52,17 @@
 				</div>
 				<div class="faketable-content">
 					{{ data.belongsToCorsoGroup.name }}
+				</div>
+			</div>
+			<div class="faketable-row">
+				<div class="faketable-head">
+					<span>Andere bloemsoort:</span>
+				</div>
+				<div class="faketable-content">
+					<form class="form" @submit.prevent="handleNewType()">
+						<FormSelect label="Wissel bloemsoort" placeholder="Selecteer soort" :options="allFlowers" v-model:value="newFlowerType" style="margin-top:10px;" />
+						<Button type="submit" title="Opslaan" style="margin-top:10px;" />
+					</form>
 				</div>
 			</div>
 			<div class="faketable-row">
@@ -97,23 +109,32 @@
 	import { useStore } from "vuex";
 	import { useRoute } from "vue-router";
 	import { ref, reactive, watch, onMounted } from "vue";
-	import { fetchSingleBox } from "@/api/boxes.js";
+	import { fetchSingleBox, updateFlowerType } from "@/api/boxes.js";
+	import FormSelect from "@/components/base/form/FormSelect.vue";
+	import Button from "@/components/base/Button.vue";
+
 	import dayjs from "dayjs";
 	import Calendar from "dayjs/plugin/calendar";
 	dayjs.extend(Calendar);
+	import { db } from "@/functions/firebaseConfig.js";
+	import { useFirestore } from "@vueuse/firebase/useFirestore.esm";
 
 	export default {
 		components: {
 			BasePage,
+			Button,
+			FormSelect,
 		},
 		setup() {
 			const store = useStore();
 			const route = useRoute();
+			const routeId = route.params.id;
 			const ui = reactive({
 				loading: true,
 			});
+			const newFlowerType = ref();
+			const allFlowers = useFirestore(db.collection("flowerTypes"));
 
-			// Get flowerTypes
 			const data = ref(null);
 			const getAll = async (id) => {
 				ui.loading = true;
@@ -132,12 +153,19 @@
 				},
 			);
 
+			const handleNewType = () => {
+				updateFlowerType(routeId, data.value.flowerType, newFlowerType.value)
+			}
+
 			return {
 				ui,
 				boxId: route.params.id,
+				allFlowers,
+				newFlowerType,
 				data,
 				dayjs,
 				places: store.state.places,
+				handleNewType,
 			};
 		},
 	};
