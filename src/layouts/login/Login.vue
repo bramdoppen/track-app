@@ -59,6 +59,11 @@
 		setup() {
 			const store = useStore();
 			const router = useRouter();
+			
+			// If user is logged in, redirect to root
+			if(store.state.user !== null) {
+				router.push("/");
+			}
 
 			// Build user vars
 			const user = ref({

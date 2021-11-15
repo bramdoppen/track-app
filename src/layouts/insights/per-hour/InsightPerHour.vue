@@ -1,85 +1,8 @@
 <template>
-	<BasePage title="Inzicht">
+	<BasePage title="Per uur">
 		<transition name="fade" mode="out-in" appear>
 			<div v-if="allBoxes && allParts" class="container">
 				<BoxesList gap="20px">
-					<BoxesList>
-						<div class="box-holder">
-							<BoxListViewItem :title="`${totalProcessedBoxes.length}  &#128230;`" sub="verwerkt" />
-							<BoxListViewItem :title="`${totalCalculated.percentage}%`" sub="afgerond" />
-							<BoxListViewItem :title="`${totalCalculated.correctionBoxes.toFixed(1)} &#128230;`" sub="tekort" />
-						</div>
-					</BoxesList>
-					<BoxesList gap="8px">
-						<h2>Tekort</h2>
-						<div class="light-message">
-							<span v-if="!totalCalculated.correctionBoxes">Geen tekorten op dit moment &#9989;</span>
-							<span v-else>Eventuele tekorten worden binnenkort getoond</span>
-						</div>
-					</BoxesList>
-					<BoxesList gap="8px">
-						<h2 style="margin-bottom: 10px;">Wagenonderdelen</h2>
-						<div class="box-holder" style="margin-bottom: 10px;">
-							<BoxListViewItem :title="`${totalCalculated.calculatedBoxes} &#128230;`" sub="totaal berekend" />
-						</div>
-						<BoxListViewItem v-for="item in filteredParts.active" :key="item.id" :title="item.name" onEditText="Bekijk" :onEdit="() => onEdit(item)">
-							<div class="subitem">
-								<Label state="warning" class="label" v-if="calculatePercentage(item) > 95">Check voor afronding</Label>
-								<span>{{ calculatePercentage(item) }}% afgerond</span>
-								<span v-if="item.correctionTotalAmountBoxes && item.correctionTotalAmountBoxes > 0">{{ item.correctionTotalAmountBoxes }} tekort</span>
-							</div>
-						</BoxListViewItem>
-					</BoxesList>
-					<BoxesList gap="8px" style="border-top:0;" v-if="filteredParts.completed.length > 0">
-						<h3 style="margin-bottom: 10px;">&#9989; Afgeronde onderdelen</h3>
-						<BoxListViewItem v-for="item in filteredParts.completed" :key="item.id" :title="item.name" onEditText="Bekijk" :onEdit="() => onEdit(item)">
-							<div class="subitem">
-								<span>{{ calculatePercentage(item) }}% afgerond</span>
-								<span v-if="item.correctionTotalAmountBoxes && item.correctionTotalAmountBoxes > 0">{{ item.correctionTotalAmountBoxes }} tekort</span>
-							</div>
-						</BoxListViewItem>
-					</BoxesList>
-
-					<BoxesList gap="8px">
-						<h2>Kratten / Leveringen</h2>
-						<span style="text-align: center; font-size: 0.8em; margin-bottom: 20px;">Overzicht geeft per dahliasoort aan hoeveel kratten besteld, binnen en al verwerkt zijn.</span>
-						<table class="tableone" v-if="allFlowers && boxesPerState">
-							<tr>
-								<th style="width: 0">#</th>
-								<th>Bloem</th>
-								<th style="width: 0;padding:4px;">BS</th>
-								<th style="width: 0;padding:4px;">CA</th>
-								<th style="width: 0;padding:4px;">IN</th>
-								<th style="width: 0;padding:4px;">AT</th>
-								<th style="width: 0;padding:4px;">VW</th>
-							</tr>
-							<tr v-for="(flower, idx) in allFlowers" :key="idx">
-								<td style="width: 0">{{ flower.id }}</td>
-								<td>{{ flower.name }}</td>
-								<td style="width: 0;padding:4px;; border-left: 1px solid gray;">{{ calculateOrdered(flower) }}</td>
-								<td style="width: 0;padding:4px;">-</td>
-								<td style="width: 0;padding:4px;">{{ boxesPerState[flower.id] ? boxesPerState[flower.id].total : 0 }}</td>
-								<td style="width: 0;padding:4px;">{{ boxesPerState[flower.id] ? boxesPerState[flower.id].atPart : 0 }}</td>
-								<td style="width: 0;padding:4px;">{{ boxesPerState[flower.id] ? boxesPerState[flower.id].processed : 0 }}</td>
-							</tr>
-						</table>
-
-						<div style="padding: 20px;" v-else>Laden...</div>
-						<div style="margin-top: 10px; font-size: 10px; font-style: italic;">
-							CA = Berekend (Besteld extern + intern + tekort); <br />IN = Geregistreerd in systeem (incl verwerkt); <br />
-							AT = Kratten bij een onderdeel;<br />VW = Verwerkt op wagen;
-						</div>
-						<Button to="/deliveries/list" title="Beheer leveringen" />
-					</BoxesList>
-					<BoxesList gap="8px">
-						<h2>Gespijkerde kratten</h2>
-						<span style="text-align: center; font-size: 0.8em; margin-bottom: 20px;">Deze kratten zijn klaar om op de wagen te gaan.</span>
-						<Box style="padding:15px">
-							<div class="chart-holder">
-								<BoxesPerStatus :rawBoxes="allBoxes" :state="2" :horizontal="true" style="height: 300px;"></BoxesPerStatus>
-							</div>
-						</Box>
-					</BoxesList>
 					<BoxesList gap="8px">
 						<h2>Afgerond per uur</h2>
 						<span style="text-align: center; font-size: 0.8em; margin-bottom: 20px;">Deze kratten zijn klaar om op de wagen te gaan.</span>
@@ -114,14 +37,10 @@
 <script>
 	import { computed } from "vue";
 	import BasePage from "@/layouts/BasePage.vue";
-	import BoxListViewItem from "@/components/base/BoxListViewItem.vue";
 	import Box from "@/components/base/Box.vue";
-	import Label from "@/components/base/Label.vue";
 
 	import BoxesList from "@/components/base/BoxesList.vue";
-	import BoxesPerStatus from "@/components/charts/BoxesPerStatus.vue";
 	import BoxesPerHour from "@/components/charts/BoxesPerHour.vue";
-	import Button from "@/components/base/Button.vue";
 
 	import { useStore } from "vuex";
 	import { useRouter } from "vue-router";
@@ -135,13 +54,9 @@
 	export default {
 		components: {
 			BasePage,
-			BoxListViewItem,
 			Box,
-			Button,
-			BoxesPerStatus,
 			BoxesPerHour,
 			BoxesList,
-			Label,
 		},
 		setup() {
 			const store = useStore();
@@ -150,7 +65,7 @@
 			const allBoxes = useFirestore(
 				db
 					.collection("boxes")
-					.where("belongsToCorsoGroup.id", "==", store.state.corsoGroup.id)
+          .where("belongsToCorsoGroup.id", "==", store.state.corsoGroup.id)
 					.where("state", "!=", null)
 					.where("state", "<=", 5),
 			);
